@@ -3,6 +3,7 @@ package com.devid_academy.hangman
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devid_academy.ui.composables.KeyboardUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,15 +12,16 @@ import kotlin.math.roundToInt
 
 class HangmanViewModel : ViewModel(){
 
-    private val _state = MutableStateFlow(HangmanUiState())
-    fun observeMapUIState(): StateFlow<HangmanUiState> = _state
+    private val _uiState = MutableStateFlow(HangmanUiState())
+    fun observeHangmanUiState(): StateFlow<HangmanUiState> = _uiState
 
-    // val state = _state.asStateFlow()
+    private val _keyboardUiState = MutableStateFlow(KeyboardUiState())
+    fun observeKeyboardUiState(): StateFlow<KeyboardUiState> = _keyboardUiState
+
 
     val wordList = listOf(
 
         "chapeau", "ordinateur", "bibliotheque", "camion", "pomme", "soleil", "maison", "jardin", "papillon", "montagne",
-        // Ajouts
         "livre", "ciel", "eau", "chat", "chien", "voiture", "fleur", "arbre", "lumiere", "nuit",
         "jour", "heure", "minute", "seconde", "montre", "temps", "annee", "mois", "semaine", "jour",
         "soleil", "lune", "etoile", "ciel", "nuage", "pluie", "neige", "vent", "orage",
@@ -27,7 +29,7 @@ class HangmanViewModel : ViewModel(){
         "colline", "vallee", "prairie", "desert", "terre", "monde", "pays", "continent", "ile", "lac",
         "pont", "route", "chemin", "sentier", "autoroute", "tunnel", "rail", "train", "avion", "bateau",
         "port", "aeroport", "station", "velo", "moto", "bus", "tramway", "metro", "taxi", "voiture",
-        "feu", "glace", "air", "terre", "metal", "bois", "pierre", "verre", "plastique", "papier",
+        "feu", "glace", "air", "metal", "bois", "pierre", "verre", "plastique", "papier",
         "stylo", "crayon", "gomme", "regle", "ciseaux", "pinceau", "peinture", "dessin", "couleur", "forme",
         "rond", "carre", "triangle", "rectangle", "cercle", "ovale", "ligne", "point", "surface", "volume",
         "espace", "dimension", "taille", "longueur", "largeur", "hauteur", "profondeur", "distance", "mesure",
@@ -66,7 +68,7 @@ class HangmanViewModel : ViewModel(){
         "philosophie", "histoire", "geographie", "politique", "droit", "justice", "liberte", "egalite",
         "fraternite", "paix", "guerre", "conflit", "violence", "securite", "protection", "defense", "armee",
         "police", "loi", "reglement", "norme", "standard", "qualite", "securite", "environnement", "nature",
-        "ecologie", "climat", "meteo", "terre", "planete", "univers", "espace", "galaxie", "etoile",
+        "ecologie", "climat", "meteo", "planete", "univers", "espace", "galaxie", "etoile",
         "planete", "lune", "satellite", "asteroide", "comete", "trou noir", "quasar", "nebuleuse", "cosmos",
         "astronomie", "astrophysique", "physique", "chimie", "biologie", "genetique", "medecine", "sante",
         "psychologie", "sociologie", "anthropologie", "archeologie", "paleontologie", "zoologie", "botanique",
@@ -77,7 +79,7 @@ class HangmanViewModel : ViewModel(){
         "aquaculture", "pisciculture", "halieutique", "faune", "flore", "animal", "plante", "insecte",
         "oiseau", "poisson", "mammifere", "reptile", "amphibien", "mollusque", "crustace", "arachnide",
         "algue", "champignon", "bacterie", "virus", "cellule", "gene", "adn", "arn", "proteine", "enzyme",
-        "hormone", "vitamine", "mineral", "nutriment", "aliment", "boisson", "eau", "air", "feu", "terre",
+        "hormone", "vitamine", "mineral", "nutriment", "aliment", "boisson", "eau", "air", "feu",
         "energie", "force", "mouvement", "vitesse", "acceleration", "inertie", "masse", "poids", "gravite",
         "pression", "temperature", "chaleur", "lumiere", "couleur", "son", "musique", "langage", "parole",
         "ecriture", "lecture", "apprentissage", "enseignement", "education", "formation", "culture", "art",
@@ -107,21 +109,20 @@ class HangmanViewModel : ViewModel(){
 
     fun setWord(){
 
-        _state.value = HangmanUiState()
+        _uiState.value = HangmanUiState()
 
         val randomNumber = (Math.random() * 100 % wordList.size).roundToInt() -1
 
         viewModelScope.launch {
             wordList[randomNumber].forEach { value ->
                 delay(100)
-                _state.value = _state.value.copy(
-                    wordToDiscover = _state.value.wordToDiscover.toMutableList().also {
+                _uiState.value = _uiState.value.copy(
+                    wordToDiscover = _uiState.value.wordToDiscover.toMutableList().also {
                         it.add(HangmanLetter(value, false))
                     }
                 )
             }
         }
-
 
         /*
         _state.value = _state.value.copy(
@@ -145,22 +146,23 @@ class HangmanViewModel : ViewModel(){
 
         // TODO : check if word has been found => make states genre : first game, replay, game finished, ...
         // TODO : check if letter has been clicked before ;
+        // TODO : pouvoir révéler le mot
 
-        if(_state.value.counter > 0 //  && !hasNoCoveredLetter
+        if(_uiState.value.counter > 0 //  && !hasNoCoveredLetter
             ){
-            val wordToDiscover = _state.value.wordToDiscover.toMutableList()
+            val wordToDiscover = _uiState.value.wordToDiscover.toMutableList()
             var isRightGuess = false
 
             wordToDiscover.forEachIndexed { index, hangmanLetter ->
-                if (hangmanLetter.letter == letterClicked) {
+                if (hangmanLetter.letter.lowercaseChar() == letterClicked.lowercaseChar()) {
                     isRightGuess = true
                     wordToDiscover[index] = hangmanLetter.copy(isDiscovered = true)
                 }
             }
 
-            val keyboardLetterList = _state.value.keyboardLetterList.map { row ->
+            val keyboardLetterList = _keyboardUiState.value.keyboardLetterList.map { row ->
                 row.map { key ->
-                    if (key.letter == letterClicked) {
+                    if (key.letter.lowercaseChar() == letterClicked.lowercaseChar()) {
                         key.copy(hasBeenPressed = true, keyColor = if (isRightGuess) Color(
                             0xFF54DB1A
                         ) else Color(0xFFDB1A1A)
@@ -171,13 +173,12 @@ class HangmanViewModel : ViewModel(){
                 }
             }.toMutableList()
 
-            _state.value = _state.value.copy(keyboardLetterList = keyboardLetterList)
-
+            _keyboardUiState.value = _keyboardUiState.value.copy(keyboardLetterList = keyboardLetterList)
 
             if(isRightGuess)
-                _state.value = _state.value.copy(wordToDiscover = wordToDiscover)
+                _uiState.value = _uiState.value.copy(wordToDiscover = wordToDiscover)
             else
-                _state.value = _state.value.copy(counter = _state.value.counter - 1)
+                _uiState.value = _uiState.value.copy(counter = _uiState.value.counter - 1)
         }
     }
 

@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.devid_academy.ui.model.Route
 import com.devid_academy.wordgames.navigation.NavigationBuilder.setHangmanScreen
 import com.devid_academy.wordgames.navigation.NavigationBuilder.setHomeScreen
+import com.devid_academy.wordgames.navigation.NavigationBuilder.setMotusScreen
 
 @Composable
 fun WordgamesNavigation (
@@ -16,5 +17,6 @@ fun WordgamesNavigation (
     NavHost(navController = navController, startDestination = Route.HomeScreen.name) {
         setHomeScreen(navController, innerPadding)
         setHangmanScreen(navController, innerPadding)
+        setMotusScreen(navController, innerPadding)
     }
 }

@@ -53,6 +53,7 @@ dependencies {
 
     implementation(projects.presentation.home)
     implementation(projects.presentation.hangman)
+    implementation(projects.presentation.motus)
     implementation(projects.core.ui)
 
     implementation(libs.androidx.core.ktx)

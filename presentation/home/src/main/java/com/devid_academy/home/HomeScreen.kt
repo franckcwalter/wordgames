@@ -21,6 +21,9 @@ fun HomeScreen(
         innerPadding = innerPadding,
         onHangmanButtonClick = {
             navController.navigate(Route.HangmanScreen.name)
+        },
+        onMotusButtonClick = {
+            navController.navigate(Route.MotusScreen.name)
         }
     )
 }
@@ -28,13 +31,17 @@ fun HomeScreen(
 @Composable
 fun HomeContent(
     innerPadding: PaddingValues,
-    onHangmanButtonClick: ()->Unit
+    onHangmanButtonClick: () -> Unit,
+    onMotusButtonClick: () -> Unit
 ){
     Box(modifier = Modifier.fillMaxSize()){
         Column(modifier = Modifier.align(Alignment.Center)) {
             Text("Home")
             Button( onHangmanButtonClick ){
                 Text("To hangman")
+            }
+            Button( onMotusButtonClick ){
+                Text("To motus")
             }
         }
     }

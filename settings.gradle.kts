@@ -27,8 +27,9 @@ include(":app")
 
 include(":presentation:home")
 include(":presentation:hangman")
+include(":presentation:motus")
 
 include(":model:auth")
 include(":model:gamedata")
-include(":core")
+
 include(":core:ui")

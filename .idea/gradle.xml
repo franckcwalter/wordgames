@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/presentation" />
             <option value="$PROJECT_DIR$/presentation/hangman" />
             <option value="$PROJECT_DIR$/presentation/home" />
+            <option value="$PROJECT_DIR$/presentation/motus" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.devid_academy.hangman.HangmanScreen
 import com.devid_academy.home.HomeScreen
+import com.devid_academy.motus.MotusScreen
 import com.devid_academy.ui.model.Route
 
 
@@ -32,6 +33,19 @@ object NavigationBuilder {
             route = Route.HangmanScreen.name
         ){
             HangmanScreen(navController, innerPadding)
+        }
+    }
+
+
+    fun NavGraphBuilder.setMotusScreen(
+        navController: NavHostController,
+        innerPadding: PaddingValues = PaddingValues(),
+        animationDuration: Int = 700
+    ) {
+        composable(
+            route = Route.MotusScreen.name
+        ){
+            MotusScreen(navController, innerPadding)
         }
     }
 

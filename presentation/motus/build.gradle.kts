@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.devid_academy.presentation.hangman"
+    namespace = "com.devid_academy.presentation.motus"
     compileSdk = 34
 
     defaultConfig {
@@ -45,6 +45,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
 
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -63,5 +64,6 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.fragment:fragment-ktx:1.7.0")
+
 
 }
