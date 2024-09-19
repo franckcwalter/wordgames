@@ -47,22 +47,19 @@ class MotusViewModel : ViewModel() {
                         if (size > i) set(i, row.toList().toMutableList())
                         else add(row.toList().toMutableList())
                     })
-                     delay(30)
+                    // delay(30)
                 }
                 tempGrid.add(row)
             }
         }
 
         // Set word to discover
-        val randomNumber = (Math.random() * 100 % wordList.size).roundToInt()
-        val selectedWord = wordList[randomNumber]
-
-        val wordToDiscover = selectedWord.map { MotusLetter(it.uppercaseChar()) }
+        val wordToDiscover = wordList[(Math.random() * 100 % wordList.size).roundToInt()]
+            .map { MotusLetter(it.uppercaseChar()) }
 
         _uiState.value = _uiState.value.copy(
             wordToDiscover = wordToDiscover
         )
-
     }
 
     fun addLetterToGrid(letterClicked: Char) {

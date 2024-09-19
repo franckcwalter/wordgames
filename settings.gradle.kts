@@ -25,7 +25,7 @@ rootProject.name = "wordgames"
 
 include(":app")
 
-include(":presentation:home")
+include(":presentation:common")
 include(":presentation:hangman")
 include(":presentation:motus")
 

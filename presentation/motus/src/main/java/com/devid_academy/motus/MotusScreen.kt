@@ -82,11 +82,12 @@ fun MotusContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ){
 
+        /*
         Row {
             uiState.wordToDiscover.forEach { value ->
                 Text(text = value.letter.toString())
             }
-        }
+        }*/
 
         /*
         Row {

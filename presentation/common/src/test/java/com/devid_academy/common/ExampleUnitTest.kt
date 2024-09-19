@@ -1,4 +1,4 @@
-package com.devid_academy.home
+package com.devid_academy.common
 
 import org.junit.Test
 

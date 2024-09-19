@@ -1,0 +1,6 @@
+<resources>
+    <string name="content_desc_">wordgames</string>
+    <string name="image_content_desc_logo">logo</string>
+    <string name="image_content_desc_offline_online_button">Bouton En linge/ Hors Ligne</string>
+    <string name="image_content_desc_game_logo">"logo du jeu %1$s "</string>
+</resources>

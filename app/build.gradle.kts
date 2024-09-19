@@ -51,7 +51,7 @@ android {
 
 dependencies {
 
-    implementation(projects.presentation.home)
+    implementation(projects.presentation.common)
     implementation(projects.presentation.hangman)
     implementation(projects.presentation.motus)
     implementation(projects.core.ui)
@@ -78,5 +78,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.ui.tooling.preview)
+
+    // Koin
+    implementation(libs.koin.core)
+    implementation(libs.koin.androidx.compose)
 
 }
