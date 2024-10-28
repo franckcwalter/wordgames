@@ -40,6 +40,10 @@ android {
 dependencies {
 
     implementation(projects.core.ui)
+    implementation(projects.presentation.common)
+    implementation(project(":model:local"))
+
+
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -57,6 +61,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
 
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -64,6 +69,11 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.fragment:fragment-ktx:1.7.0")
+
+
+    // Koin
+    implementation(libs.koin.core)
+    implementation(libs.koin.androidx.compose)
 
 
 }

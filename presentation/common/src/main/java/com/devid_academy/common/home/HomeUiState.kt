@@ -29,5 +29,6 @@ data class HomeUiState (
             name = "LE PETIT BAC"
         )
     ),
-    val selectedGameId: String = ""
+    val selectedGameId: String = "",
+    val isDisplayingQuitApp: Boolean = false
 )

@@ -28,6 +28,13 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -55,6 +62,7 @@ dependencies {
     implementation(projects.presentation.hangman)
     implementation(projects.presentation.motus)
     implementation(projects.core.ui)
+    implementation(projects.model.gamedata)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -62,6 +70,7 @@ dependencies {
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(project(":model:local"))
 
     debugImplementation(libs.ui.tooling)
 
@@ -82,5 +91,9 @@ dependencies {
     // Koin
     implementation(libs.koin.core)
     implementation(libs.koin.androidx.compose)
+
+    // material icons
+    implementation(libs.androidx.material.icons.extended.v143)
+
 
 }

@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.devid_academy.common.game_base.GameBase
+import com.devid_academy.common.utils.getRandomColor
 import com.devid_academy.ui.composables.Keyboard
 import com.devid_academy.ui.composables.KeyboardUiState
 import com.devid_academy.core.ui.R
@@ -38,20 +40,26 @@ fun HangmanScreen(
 ) {
 
     val viewModel : HangmanViewModel = viewModel()
+
     val uiState by viewModel.observeHangmanUiState().collectAsState()
     val keyboardUiState by viewModel.observeKeyboardUiState().collectAsState()
 
-    HangmanContent(
-        innerPadding = innerPadding,
-        uiState = uiState,
-        keyboardUiState = keyboardUiState,
-        onLetterClick = {
-            viewModel.onLetterClicked(it)
-        },
-        setNewWord = {
-            viewModel.setWord()
-        }
-    )
+    GameBase(
+        onQuitGame = { navController.popBackStack() },
+        onClue = {  }
+    ){
+        HangmanContent(
+            innerPadding = innerPadding,
+            uiState = uiState,
+            keyboardUiState = keyboardUiState,
+            onLetterClick = {
+                viewModel.onLetterClicked(it)
+            },
+            setNewWord = {
+                viewModel.setWord()
+            }
+        )
+    }
 }
 
 @Composable
@@ -62,14 +70,9 @@ fun HangmanContent(
     onLetterClick: (Char) -> Unit,
     setNewWord: () -> Unit
 ){
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Color(0xFFFECB35))
-    )
-
-
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .background(getRandomColor()),
         verticalArrangement = Arrangement.Center
     ) {
 
@@ -154,14 +157,15 @@ data class HangmanLetter(
 @Preview
 @Composable
 fun HangmanContentPreview() {
-    HangmanContent(
-        uiState = HangmanUiState(),
-        keyboardUiState = KeyboardUiState(),
-        onLetterClick = {  },
-        setNewWord = {  }
-    )
+    GameBase(
+        onQuitGame = { },
+        onClue = {  }
+    ){
+        HangmanContent(
+            uiState = HangmanUiState(),
+            keyboardUiState = KeyboardUiState(),
+            onLetterClick = {  },
+            setNewWord = {  }
+        )
+    }
 }
-
-
-
-

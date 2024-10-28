@@ -29,4 +29,12 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    fun toggleQuitAppModal() {
+        uiState.update {
+            uiState.value.copy(
+                isDisplayingQuitApp = !uiState.value.isDisplayingQuitApp
+            )
+        }
+    }
+
 }

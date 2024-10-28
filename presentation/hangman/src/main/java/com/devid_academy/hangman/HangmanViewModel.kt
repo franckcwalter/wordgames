@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-class HangmanViewModel : ViewModel(){
+class HangmanViewModel : ViewModel(
+
+){
 
     private val _uiState = MutableStateFlow(HangmanUiState())
     fun observeHangmanUiState(): StateFlow<HangmanUiState> = _uiState

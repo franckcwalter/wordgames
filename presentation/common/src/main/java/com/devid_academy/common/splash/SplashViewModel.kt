@@ -2,19 +2,22 @@ package com.devid_academy.common.splash
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.devid_academy.gamedata.GameDataRepository
+import com.devid_academy.local.LocalDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class SplashViewModel : ViewModel() {
+class SplashViewModel (
+    val repo: GameDataRepository,
+    val localdb: LocalDatabase
+) : ViewModel() {
 
-
-    init {
-        // Log.e("SplashViewModel", " in here ")
+    fun getGameData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = repo.fetchGamesWithData()
+            Log.e("SplashViewModel",result.toString())
+        }
     }
-
-    fun getData() {
-        // TODO(" implement method to get game data")
-        // genre : pour chaque jeu qui existe, envoie toutes les DATA pour  ce jeu ;
-
-    }
-
 
 }

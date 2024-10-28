@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/model" />
             <option value="$PROJECT_DIR$/model/auth" />
             <option value="$PROJECT_DIR$/model/gamedata" />
+            <option value="$PROJECT_DIR$/model/local" />
             <option value="$PROJECT_DIR$/presentation" />
             <option value="$PROJECT_DIR$/presentation/common" />
             <option value="$PROJECT_DIR$/presentation/hangman" />

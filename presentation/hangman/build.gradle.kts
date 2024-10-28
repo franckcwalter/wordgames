@@ -40,6 +40,7 @@ android {
 dependencies {
 
     implementation(projects.core.ui)
+    implementation(projects.presentation.common)
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -54,6 +55,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(project(":presentation:common"))
 
 
     testImplementation(libs.junit)

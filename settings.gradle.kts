@@ -33,3 +33,4 @@ include(":model:auth")
 include(":model:gamedata")
 
 include(":core:ui")
+include(":model:local")

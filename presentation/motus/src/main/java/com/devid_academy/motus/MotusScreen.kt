@@ -30,10 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.devid_academy.common.common.Background
+import com.devid_academy.common.game_base.GameBase
+import com.devid_academy.common.utils.getRandomColor
 import com.devid_academy.core.ui.R
 import com.devid_academy.ui.composables.AllCapsButton
 import com.devid_academy.ui.composables.Keyboard
 import com.devid_academy.ui.composables.KeyboardUiState
+import org.koin.androidx.compose.getViewModel
 
 
 @Composable
@@ -42,27 +46,32 @@ fun MotusScreen(
     innerPadding: PaddingValues = PaddingValues()
 ) {
 
-    val viewModel : MotusViewModel = viewModel()
+    val viewModel = getViewModel<MotusViewModel>()
     val uiState by viewModel.observeMotusUiState().collectAsState()
     val keyboardUiState by viewModel.observeKeyboardUiState().collectAsState()
 
-    MotusContent(
-        innerPadding = innerPadding,
-        uiState = uiState,
-        keyboardUiState = keyboardUiState,
-        startGame = {
-            viewModel.setGridAndSetWord()
-        },
-        onLetterClick = {
-            viewModel.addLetterToGrid(it)
-        },
-        onCheckClick = {
-            viewModel.checkWord()
-        },
-        onResetRow = {
-            viewModel.onResetRow()
-        }
-    )
+    GameBase(
+        onClue = {},
+        onQuitGame = { navController.popBackStack() }
+    ) {
+        MotusContent(
+            innerPadding = innerPadding,
+            uiState = uiState,
+            keyboardUiState = keyboardUiState,
+            startGame = {
+                viewModel.setGridAndSetWord()
+            },
+            onLetterClick = {
+                viewModel.addLetterToGrid(it)
+            },
+            onCheckClick = {
+                viewModel.checkWord()
+            },
+            onResetRow = {
+                viewModel.onResetRow()
+            }
+        )
+    }
 }
 
 
@@ -76,8 +85,12 @@ fun MotusContent(
     onCheckClick: () -> Unit,
     onResetRow: () -> Unit
 ){
+
+
     Column(
-        Modifier.fillMaxSize(),
+        Modifier
+            .fillMaxSize()
+            .background(getRandomColor()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
@@ -133,20 +146,46 @@ fun MotusContent(
 @Preview
 @Composable
 private fun MotusContentPreview() {
-    MotusContent(
-        uiState = MotusUiState().copy(
-            grid = mutableListOf(
-                mutableListOf(MotusLetter('A'), MotusLetter('B'), MotusLetter('C'), MotusLetter('A'), MotusLetter('B'), MotusLetter('C')),
-                mutableListOf(MotusLetter('A'), MotusLetter('B'), MotusLetter('C'), MotusLetter('A'), MotusLetter('B'), MotusLetter('C')),
-                mutableListOf(MotusLetter('A'), MotusLetter('B'), MotusLetter('C'), MotusLetter('A'), MotusLetter('B'), MotusLetter('C')),
-            )
-        ),
-        keyboardUiState = KeyboardUiState(),
-        startGame = {  },
-        onLetterClick = {  },
-        onCheckClick = {  },
-        onResetRow = {   }
-    )
+    GameBase(
+        onClue = {},
+        onQuitGame = {  }
+    ) {
+        MotusContent(
+            uiState = MotusUiState().copy(
+                grid = mutableListOf(
+                    mutableListOf(
+                        MotusLetter('A'),
+                        MotusLetter('B'),
+                        MotusLetter('C'),
+                        MotusLetter('A'),
+                        MotusLetter('B'),
+                        MotusLetter('C')
+                    ),
+                    mutableListOf(
+                        MotusLetter('A'),
+                        MotusLetter('B'),
+                        MotusLetter('C'),
+                        MotusLetter('A'),
+                        MotusLetter('B'),
+                        MotusLetter('C')
+                    ),
+                    mutableListOf(
+                        MotusLetter('A'),
+                        MotusLetter('B'),
+                        MotusLetter('C'),
+                        MotusLetter('A'),
+                        MotusLetter('B'),
+                        MotusLetter('C')
+                    ),
+                )
+            ),
+            keyboardUiState = KeyboardUiState(),
+            startGame = { },
+            onLetterClick = { },
+            onCheckClick = { },
+            onResetRow = { }
+        )
+    }
 }
 
 
@@ -175,7 +214,7 @@ fun MotusGrid(
                                 shape = RoundedCornerShape(15.dp)
                             )
                             .background(
-                                color = when (motusLetter.state){
+                                color = when (motusLetter.state) {
                                     MotusLetterState.INITIAL -> Color(0xFFFFFFFF)
                                     MotusLetterState.INSIDE_WORD -> Color(0xFFDBA41A)
                                     MotusLetterState.CORRECT -> Color(0xFF54DB1A) // FF54DB1A

@@ -51,6 +51,8 @@ dependencies {
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(project(":model:gamedata"))
+    implementation(project(":model:local"))
 
     debugImplementation(libs.ui.tooling)
 

@@ -1,7 +1,8 @@
 package com.devid_academy.common.home
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,12 +18,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Public
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,17 +34,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.devid_academy.common.R
+import com.devid_academy.common.common.LargeButton
+import com.devid_academy.common.common.MediumButton
+import com.devid_academy.common.common.Background
+import com.devid_academy.common.common.SquareIconButton
+import com.devid_academy.common.game_base.QuitGameModale
 import com.devid_academy.ui.model.Route
 import org.koin.androidx.compose.getViewModel
 
@@ -59,6 +62,8 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         viewModel.getGameList()
     }
+
+    BackHandler(onBack = { viewModel.toggleQuitAppModal() })
 
     HomeContent(
         homeUiState = homeUiState.value,
@@ -85,6 +90,21 @@ fun HomeScreen(
             // navController.navigate(Route.Stats.name)
         }
     )
+
+    val activity : Activity = LocalContext.current as Activity
+    if (homeUiState.value.isDisplayingQuitApp){
+        QuitGameModale(
+            onStay = { viewModel.toggleQuitAppModal() },
+            onQuit = {
+                // TODO : afficher animation
+
+                activity.finish()
+                     },
+            stayButtonLabel = "RETOUR À WORDGAMES",
+            quitButtonLabel = "Quitter WORDGAMES",
+            text = "Voulez-vous vraiment\nquitter WORDGAMES? "
+        )
+    }
 }
 
 @Composable
@@ -97,10 +117,10 @@ fun HomeContent(
     onProfile: () -> Unit,
     onStats: () -> Unit
 ){
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Color(0xFFfecb36))
-    ){
+    Box(modifier = Modifier.fillMaxWidth()){
+
+        Background()
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -114,114 +134,64 @@ fun HomeContent(
                         .height(48.dp),
                     contentScale = ContentScale.FillHeight
                 )
-
-                Button(
-                    onClick = onOfflineOnline,
+                
+                SquareIconButton(
+                    imageVector = Icons.Rounded.Public,
                     modifier = Modifier
                         .padding(end = 12.dp)
-                        .align(Alignment.CenterEnd)
-                        .size(48.dp)
-                    ,
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.Black,
-                        containerColor = Color.White,
-                    ),
-                    shape = RoundedCornerShape(15.dp),
-                    border = BorderStroke(2.dp, Color.Black)
-                ){
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = Icons.Rounded.Public,
-                        contentDescription = stringResource(R.string.image_content_desc_offline_online_button)
-                    )
+                        .align(Alignment.CenterEnd)){
+                    onOfflineOnline()
                 }
             }
 
-            Spacer(Modifier.height(48.dp))
+            Spacer(Modifier.height(24.dp))
 
             Text(
                 text = "Choisissez un jeu\n et commencez à jouer !",
-                fontFamily = FontFamily(Font(com.devid_academy.core.ui.R.font.kanit_regular)),
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(Modifier.height(48.dp))
+            Spacer(Modifier.height(24.dp))
 
-            homeUiState.gameInfoList.forEach {
-                 HomeContentGameCard(
-                     gameInfo = it,
-                     selectedGameId = homeUiState.selectedGameId,
-                     onGameCard = { selectedGameId ->
-                        onGameCard(selectedGameId)
-                     }
-                 )
+            Box(Modifier.weight(.1f).verticalScroll(rememberScrollState())){
+                Column(Modifier){
+                    homeUiState.gameInfoList.forEach {
+                        HomeContentGameCard(
+                            gameInfo = it,
+                            selectedGameId = homeUiState.selectedGameId,
+                            onGameCard = { selectedGameId ->
+                                onGameCard(selectedGameId)
+                            }
+                        )
+                    }
+                }
             }
+            Spacer(Modifier.height(24.dp))
 
-            Spacer(Modifier.height(40.dp))
-
-
-            Button(
-                onClick = onStartGame,
-                modifier = Modifier,
-             //   contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.Black,
-                    containerColor = Color(0xFFfdb420),
-                ),
-                shape = RoundedCornerShape(15.dp),
-                border = BorderStroke(2.dp, Color.Black)
-            ) {
-                Text(
-                    text = "COMMENCER À JOUER !",
-                    fontFamily = FontFamily(Font(com.devid_academy.core.ui.R.font.kanit_regular)),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+            LargeButton(
+                label = "COMMENCER À JOUER !",
+                containerColor = Color(0xFFfdb420)){
+                onStartGame()
             }
 
             Spacer(Modifier.height(12.dp))
 
             Row() {
-                Button(
-                    onClick = onStats,
-                    modifier = Modifier,
-                    //   contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.Black,
-                        containerColor = Color(0xFFfe6465),
-                    ),
-                    shape = RoundedCornerShape(15.dp),
-                    border = BorderStroke(2.dp, Color.Black)
-                ) {
-                    Text(
-                        text = "Statistiques",
-                        fontFamily = FontFamily(Font(com.devid_academy.core.ui.R.font.kanit_regular)),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                MediumButton(
+                    label = "Statistiques",
+                    containerColor = Color(0xFFfe6465)) {
+                    onStats()
                 }
                 Spacer(Modifier.width(12.dp))
-                Button(
-                    onClick = onProfile,
-                    modifier = Modifier,
-                    //   contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.Black,
-                        containerColor = Color(0xFF4de5d0),
-                    ),
-                    shape = RoundedCornerShape(15.dp),
-                    border = BorderStroke(2.dp, Color.Black)
-                ) {
-                    Text(
-                        text = "Profile",
-                        fontFamily = FontFamily(Font(com.devid_academy.core.ui.R.font.kanit_regular)),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal
-                    )
+                MediumButton(
+                    label = "Profile",
+                    containerColor = Color(0xFF4de5d0)) {
+                    onProfile()
                 }
             }
+
+            Spacer(Modifier.height(24.dp))
 
         }
     }
@@ -273,15 +243,12 @@ fun HomeContentGameCard(
         Column(){
             Text(
                 text = gameInfo.name,
-                fontFamily = FontFamily(Font(com.devid_academy.core.ui.R.font.kanit_regular)),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleSmall
             )
             Spacer(Modifier.height(2.dp))
             Text(
                 text = gameInfo.description,
-                fontFamily = FontFamily(Font(com.devid_academy.core.ui.R.font.kanit_regular)),
-                fontSize = 12.sp
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
@@ -308,4 +275,19 @@ data class GameInfo(
     val description: String,
     @DrawableRes val imageRes: Int
 )
+
+
+@Preview
+@Composable
+private fun HomeContentPreview() {
+    HomeContent(
+        homeUiState = HomeUiState(),
+        onProfile = {},
+        onStats = {},
+        onStartGame = {},
+        onGameCard = {},
+        onOfflineOnline = {}
+    )
+}
+
 
