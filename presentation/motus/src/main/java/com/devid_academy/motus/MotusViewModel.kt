@@ -3,7 +3,6 @@ package com.devid_academy.motus
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.devid_academy.local.LocalDatabase
 import com.devid_academy.ui.composables.KeyboardUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +11,6 @@ import kotlin.math.roundToInt
 
 
 class MotusViewModel (
-
 
 ): ViewModel() {
 

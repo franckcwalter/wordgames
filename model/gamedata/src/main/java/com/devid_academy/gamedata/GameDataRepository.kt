@@ -45,30 +45,27 @@ class GameDataRepositoryImpl(
                          localdb.gameDataDao().gameWithSameHashExists(game.id, game.gameDataHash).toString())
 
             if (localdb.gameDataDao().gameWithSameHashExists(game.id, game.gameDataHash) == 0) {
-                Log.d("GameDataRepositoryImpl ", " insertGamesWithDataIntoLocalDb game data is added to local database ")
 
-                localdb.gameDataDao().insertGames(
-                    mapGameToGameLocal(game)
+                Log.d("GameDataRepositoryImpl","game data is updated ")
+
+                localdb.gameDataDao().insertOrUpdateGame(mapGameToGameLocal(game))
+
+                localdb.gameDataDao().insertAllLevels(
+                    game.levels.map { mapLevelToLevelLocal(it, game.id) }
+                )
+                localdb.gameDataDao().insertAllRounds(
+                    game.levels.flatMap { level ->
+                        level.rounds.map { mapRoundToRoundLocal(it, level.id) }
+                    }
                 )
 
-                game.levels.forEach { level ->
-                    localdb.gameDataDao().insertLevel(
-                        mapLevelToLevelLocal(level, game.id)
-                    )
-
-                    level.rounds.forEach { round ->
-                        localdb.gameDataDao().insertRound(
-                            mapRoundToRoundLocal(round, level.id)
-                        )
-                    }
-                }
             }
         }
     }
 
     override suspend fun getRoundsByGameAndLevel(gameName: String, levelName: String): List<Round> {
-        val localRounds = localdb.gameDataDao().getRoundsByGameAndLevel(gameName, levelName)
-        return localRounds.map { mapRoundLocalToRound(it) }
+        return localdb.gameDataDao().getRoundsByGameAndLevel(gameName, levelName)
+            .map { mapRoundLocalToRound(it) }
     }
 
 

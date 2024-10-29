@@ -8,21 +8,21 @@ import androidx.room.Query
 @Dao
 interface GameDataDao {
 
-
-    @Insert
-    suspend fun insertGames(game: GameLocal)
-
-
-    @Insert
-    suspend fun insertLevel(game: LevelLocal)
-
-    @Insert
-    suspend fun insertRound(game: RoundLocal)
-
-
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateGame(game: GameLocal)
 
     @Query("SELECT COUNT(*) FROM game WHERE id = :gameId AND gameDataHash = :hash")
     suspend fun gameWithSameHashExists(gameId: Long, hash: String): Int
+
+
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAllLevels(levels: List<LevelLocal>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAllRounds(rounds: List<RoundLocal>)
+
+
 
     @Query("""
     SELECT round.id, round.data, round.level_id FROM round
@@ -31,6 +31,5 @@ interface GameDataDao {
     WHERE game.name = :gameName AND level.name = :levelName
 """)
     suspend fun getRoundsByGameAndLevel(gameName: String, levelName: String): List<RoundLocal>
-
 
 }
