@@ -7,7 +7,7 @@ import org.koin.dsl.module
 
 val modulePresentationCommon = module {
 
-    viewModel { SplashViewModel(get(), get()) }
+    viewModel { SplashViewModel(get()) }
     viewModel { HomeViewModel() }
 
 }

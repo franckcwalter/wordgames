@@ -1,5 +1,6 @@
 package com.devid_academy.motus
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -49,6 +51,12 @@ fun MotusScreen(
     val viewModel = getViewModel<MotusViewModel>()
     val uiState by viewModel.observeMotusUiState().collectAsState()
     val keyboardUiState by viewModel.observeKeyboardUiState().collectAsState()
+
+    Log.d("MotusScreen uiState ", uiState.toString())
+
+    LaunchedEffect(Unit) {
+        viewModel.getGameData()
+    }
 
     GameBase(
         onClue = {},

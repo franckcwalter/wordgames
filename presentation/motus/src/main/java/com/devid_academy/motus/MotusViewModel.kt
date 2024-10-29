@@ -1,41 +1,57 @@
 package com.devid_academy.motus
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devid_academy.gamedata.GameDataRepository
+import com.devid_academy.gamedata.MotusLevel
 import com.devid_academy.ui.composables.KeyboardUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 
 class MotusViewModel (
-
+    private val gameDataRepository: GameDataRepository
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(MotusUiState())
     fun observeMotusUiState(): StateFlow<MotusUiState> = _uiState
+    val uiState = observeMotusUiState()
 
     private val _keyboardUiState = MutableStateFlow(KeyboardUiState())
     fun observeKeyboardUiState(): StateFlow<KeyboardUiState> = _keyboardUiState
 
-    private val wordList = listOf(
-        "camion", "soleil", "maison", "jardin", "minute", "montre", "nuage", "couper",
-        "danser", "fleurs", "gagner", "habits", "images", "jouets", "livres", "manger", "nuages", "ouvert",
-        "parler", "quitter", "regard", "soeurs", "tables", "verres", "voyage", "avions", "ballon", "douche",
-        "effort", "famille", "glaces", "hautes", "jamais", "koalas", "lettre", "mamans", "nature", "object",
-        "plante", "quatre", "rappel", "sables", "toucan", "valise", "yachts", "zebres", "barque", "etages",
-        "frites", "grille", "hommes", "insist", "justes", "karate", "lisser", "masque", "navire", "ocelot",
-        "pluies", "quasar", "rapide", "tomate", "unique", "valeur", "wagons", "abbaye", "beurre", "casque",
-        "dermis", "effets", "femmes", "garcon", "herbes", "musees", "noirci", "ombres", "quiche", "ramper",
-        "secher", "tomber", "verrou", "xylose", "zoning", "jaloux", "kayaks"
-    )
 
+    fun getGameData(){
+        viewModelScope.launch {
+            val response = gameDataRepository.getRoundsByGameAndLevel("motus", MotusLevel.EASY.toString())
+            Log.d("MotusViewModel getGameData", "Fetched response: $response")
+
+            _uiState.update { currentState ->
+                currentState.copy(wordList = response)
+            }
+
+            Log.d("MotusViewModel getGameData", "Updated state: ${_uiState.value}")
+
+        }
+    }
 
     fun setGridAndSetWord(){
 
-        _uiState.value = MotusUiState()
+        _uiState.update {
+            it.copy(
+                grid = mutableListOf(),
+                currentRow = 0,
+                maxRows = 6,
+                currentMotusLetter = 0,
+                maxMotusLetter = 6,
+                wordToDiscover = listOf()
+            )
+        }
         _keyboardUiState.value = KeyboardUiState()
 
         // draw grid
@@ -56,12 +72,15 @@ class MotusViewModel (
         }
 
         // Set word to discover
-        val wordToDiscover = wordList[(Math.random() * 100 % wordList.size).roundToInt()]
-            .map { MotusLetter(it.uppercaseChar()) }
-
-        _uiState.value = _uiState.value.copy(
-            wordToDiscover = wordToDiscover
-        )
+        if (_uiState.value.wordList.isNotEmpty() )
+            _uiState.update {
+                _uiState.value.copy(
+                    wordToDiscover = _uiState.value
+                        .wordList[(Math.random() * 100 % _uiState.value.wordList.size).roundToInt()]
+                        .data[0]
+                        .map { MotusLetter(it.uppercaseChar()) }
+                )
+            }
     }
 
     fun addLetterToGrid(letterClicked: Char) {

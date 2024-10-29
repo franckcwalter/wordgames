@@ -24,8 +24,7 @@ class GameDataRepositoryImpl(
             Log.e("GameDataRepositoryImpl","fetchGamesWithData() response : $response")
 
             if (response is ApiResult.Success) {
-                val gamesWithData = response.data
-                insertGamesWithDataIntoLocalDb(gamesWithData)
+                insertGamesWithDataIntoLocalDb(response.data)
             }
             response
         } catch (e: HttpException) {

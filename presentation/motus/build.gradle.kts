@@ -41,7 +41,8 @@ dependencies {
 
     implementation(projects.core.ui)
     implementation(projects.presentation.common)
-    implementation(project(":model:local"))
+    // implementation(project(":model:local"))
+    implementation(project(":model:gamedata"))
 
 
 
