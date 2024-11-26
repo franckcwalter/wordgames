@@ -1,5 +1,9 @@
 package com.devid_academy.gamedata
 
-enum class MotusLevel {
-    EASY, MEDIUM, HARD
+enum class LevelEnum {
+    EASY, MEDIUM, HARD, EXTREME
+}
+
+enum class ModeEnum {
+    NORMAL, CHRONO, MYSTERY
 }

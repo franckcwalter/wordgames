@@ -1,5 +1,6 @@
 package com.devid_academy.common.game_base
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,20 +11,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -32,17 +30,30 @@ import androidx.compose.ui.unit.dp
 import com.devid_academy.common.R
 import com.devid_academy.common.common.SquareIconButton
 import com.devid_academy.common.utils.getRandomColor
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun GameBase(
-    onClue: () -> Unit,
-    onQuitGame: () -> Unit,
-    content: @Composable () -> Unit,
+    onClue: ()->Unit,
+    onQuitGame: ()->Unit,
+    content: @Composable ()->Unit,
 ){
-    val isDisplayingSettings = remember { mutableStateOf(false) }
-    val isDisplayingQuitGame = remember { mutableStateOf(false) }
+    val viewModel = getViewModel<GameBaseViewModel>()
+    val uiState = viewModel.observeGameBaseUiState().collectAsState()
 
-    BackHandler(onBack = { isDisplayingQuitGame.value = true})
+    LaunchedEffect(Unit) {
+        viewModel.init()
+    }
+
+    LaunchedEffect(uiState.value.mode, uiState.value.level) {
+        Log.d(
+            "GameBase uiState.value mode + level : ",
+            uiState.value.mode.toString() + " + " + uiState.value.level.toString()
+        )
+    }
+
+
+    BackHandler(onBack = { viewModel.toggleIsDisplayingQuitGame() })
 
     Box(
         Modifier
@@ -71,12 +82,11 @@ fun GameBase(
             verticalAlignment = Alignment.CenterVertically,
 
         ){
-
             Image(
                 modifier = Modifier
                     .width(120.dp)
                     .clickable {
-                        isDisplayingQuitGame.value = true
+                        viewModel.toggleIsDisplayingQuitGame()
                     },
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = null
@@ -90,7 +100,7 @@ fun GameBase(
             SquareIconButton(
                 modifier = Modifier.padding(end = 12.dp),
                 imageVector = Icons.Rounded.Settings) {
-                isDisplayingSettings.value = true
+                viewModel.toggleIsDisplayingSettings()
             }
 
             SquareIconButton(
@@ -105,15 +115,20 @@ fun GameBase(
         }
     }
 
-    if (isDisplayingSettings.value){
+    if (uiState.value.isDisplayingSettings){
         SettingsModal(
-            onClose = { isDisplayingSettings.value = false },
-            onQuitGame = { onQuitGame() }
+            uiState = uiState.value,
+            updateLevelSliderPosition = { viewModel.updateLevelSlider(it) },
+            updateModeSliderPosition = { viewModel.updateModeSlider(it) },
+            onStartTutorial = { viewModel.startTutorial() },
+            onQuitGame = { onQuitGame() },
+            onCloseAndCommitChanges = { viewModel.closeModalAndCommitChanges() },
+            onClose = { viewModel.toggleIsDisplayingSettings() },
         )
     }
-    if (isDisplayingQuitGame.value){
+    if (uiState.value.isDisplayingQuitGame){
         QuitGameModale(
-            onStay = { isDisplayingQuitGame.value = false },
+            onStay = { viewModel.toggleIsDisplayingQuitGame() },
             onQuit = { onQuitGame() },
             stayButtonLabel = "RETOUR AU JEU",
             quitButtonLabel = "Quitter le jeu",

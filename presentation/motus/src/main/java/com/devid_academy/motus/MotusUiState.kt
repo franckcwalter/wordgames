@@ -1,11 +1,11 @@
 package com.devid_academy.motus
 
-import com.devid_academy.gamedata.MotusLevel
+import com.devid_academy.gamedata.LevelEnum
 import com.devid_academy.gamedata.Round
 
 data class MotusUiState(
 
-    val level: MotusLevel = MotusLevel.EASY,
+    val level: LevelEnum = LevelEnum.EASY,
     val wordList: List<Round> = listOf(),
 
     val grid: MutableList<MutableList<MotusLetter>> = mutableListOf(),

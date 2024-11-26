@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devid_academy.gamedata.GameDataRepository
-import com.devid_academy.gamedata.MotusLevel
+import com.devid_academy.gamedata.LevelEnum
 import com.devid_academy.ui.composables.KeyboardUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +28,7 @@ class MotusViewModel (
 
     fun getGameData(){
         viewModelScope.launch {
-            val response = gameDataRepository.getRoundsByGameAndLevel("motus", MotusLevel.EASY.toString())
+            val response = gameDataRepository.getRoundsByGameAndLevel("motus", LevelEnum.EASY.toString())
             Log.d("MotusViewModel getGameData", "Fetched response: $response")
 
             _uiState.update { currentState ->
