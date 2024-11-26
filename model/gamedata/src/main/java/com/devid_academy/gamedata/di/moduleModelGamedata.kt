@@ -28,7 +28,7 @@ val moduleModelGamedata = module {
 
     single {
         Retrofit.Builder()
-            .baseUrl("https://d1ee-185-61-190-198.ngrok-free.app")
+            .baseUrl("http://10.0.2.2:8001")
             .client(get())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
