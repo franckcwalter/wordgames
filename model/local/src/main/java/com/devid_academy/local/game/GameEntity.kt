@@ -1,8 +1,11 @@
-package com.devid_academy.local
+package com.devid_academy.local.game
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.LocalDateTime
+import java.util.UUID
+
 
 @Entity(tableName = "game")
 data class GameLocal(
@@ -26,3 +29,17 @@ data class RoundLocal(
     @ColumnInfo(name = "data") val data: String,
     @ColumnInfo(name = "level_id") val levelId: Long
 )
+
+@Entity(
+    // finalemnt j'ai ajouté un id
+    tableName = "user_round",
+    //primaryKeys = ["user_id", "round_id"]
+)
+data class UserRoundLocal(
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    @ColumnInfo(name = "user_id") val userId: UUID,
+    @ColumnInfo(name = "round_id") val roundId: Long,
+    @ColumnInfo(name = "datetime") val datetime: LocalDateTime,
+    @ColumnInfo(name = "points") val points: Long
+)
+

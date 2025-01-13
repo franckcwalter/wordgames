@@ -8,7 +8,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 26
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -43,6 +43,7 @@ dependencies {
     implementation(projects.presentation.common)
     // implementation(project(":model:local"))
     implementation(project(":model:gamedata"))
+    implementation(project(":model:local"))
 
 
 

@@ -1,4 +1,4 @@
-package com.devid_academy.gamedata
+package com.devid_academy.distant
 
 import retrofit2.HttpException
 import retrofit2.Response
@@ -14,7 +14,7 @@ suspend fun <T : Any> handleApi(execute: suspend () -> Response<T>): ApiResult<T
     return try {
         val response = execute()
         val body = response.body()
-
+        // TODO : allow empty body if 204
         if (response.isSuccessful && body != null) {
             ApiResult.Success(data = body)
         } else {

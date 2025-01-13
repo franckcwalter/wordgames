@@ -1,10 +1,13 @@
 package com.devid_academy.wordgames
 
 import android.app.Application
+import com.devid_academy.auth.di.moduleModelUser
 import com.devid_academy.common.di.modulePresentationCommon
 import com.devid_academy.gamedata.di.moduleModelGamedata
 import com.devid_academy.local.moduleModelLocalDB
 import com.devid_academy.motus.moduleUiMotus
+import com.devid_academy.distant.moduleNetwork
+import com.devid_academy.ui.SharedPrefsManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -18,10 +21,13 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 modulePresentationCommon,
+                moduleNetwork,
                 moduleModelGamedata,
+                moduleModelUser,
                 moduleUiMotus,
                 moduleModelLocalDB
             )
         }
+        SharedPrefsManager.init(this)
     }
 }

@@ -20,7 +20,7 @@ class MotusViewModel (
 
     private val _uiState = MutableStateFlow(MotusUiState())
     fun observeMotusUiState(): StateFlow<MotusUiState> = _uiState
-    val uiState = observeMotusUiState()
+    // val uiState = observeMotusUiState()
 
     private val _keyboardUiState = MutableStateFlow(KeyboardUiState())
     fun observeKeyboardUiState(): StateFlow<KeyboardUiState> = _keyboardUiState
@@ -49,7 +49,9 @@ class MotusViewModel (
                 maxRows = 6,
                 currentMotusLetter = 0,
                 maxMotusLetter = 6,
-                wordToDiscover = listOf()
+                wordToDiscover = listOf(),
+                pointsToWin = 10,
+                userHasWon = false
             )
         }
         _keyboardUiState.value = KeyboardUiState()
@@ -72,15 +74,18 @@ class MotusViewModel (
         }
 
         // Set word to discover
-        if (_uiState.value.wordList.isNotEmpty() )
+        if (_uiState.value.wordList.isNotEmpty() ){
+            val round = _uiState.value.wordList[(Math.random() * 100 % _uiState.value.wordList.size).roundToInt()]
             _uiState.update {
                 _uiState.value.copy(
-                    wordToDiscover = _uiState.value
-                        .wordList[(Math.random() * 100 % _uiState.value.wordList.size).roundToInt()]
+                    wordToDiscover = round
                         .data[0]
-                        .map { MotusLetter(it.uppercaseChar()) }
+                        .map { MotusLetter(it.uppercaseChar()) },
+                    currentRound = round
                 )
             }
+        }
+
     }
 
     fun addLetterToGrid(letterClicked: Char) {
@@ -109,13 +114,14 @@ class MotusViewModel (
     }
 
 
-    fun checkWord() {
+    fun checkWord(): Boolean {
         val grid = _uiState.value.grid
         val wordToDiscover = _uiState.value.wordToDiscover.toMutableList()
 
-        if (_uiState.value.currentRow > _uiState.value.maxRows - 1) return
-        if (_uiState.value.grid.isEmpty()) return
-        if (grid[_uiState.value.currentRow].any { it.letter == ' ' }) return
+        if (_uiState.value.currentRow > _uiState.value.maxRows - 1) return false
+        if (_uiState.value.grid.isEmpty()) return false
+        if (grid[_uiState.value.currentRow].any { it.letter == ' ' }) return false
+        if (_uiState.value.userHasWon) return false
 
         val updatedWordToDiscover = wordToDiscover.toMutableList()
 
@@ -143,6 +149,8 @@ class MotusViewModel (
 
         grid[_uiState.value.currentRow] = updatedWordToDiscover
 
+        val userHasWon = _uiState.value.grid[_uiState.value.currentRow].all { it.state == MotusLetterState.CORRECT }
+
         if (_uiState.value.currentRow < _uiState.value.maxRows - 1) {
             val nextRow = grid[_uiState.value.currentRow + 1].toMutableList()
 
@@ -154,17 +162,37 @@ class MotusViewModel (
                     }
                 }
             }
-
-            grid[_uiState.value.currentRow + 1] = nextRow
+            if (!userHasWon)
+                grid[_uiState.value.currentRow + 1] = nextRow
         }
 
         _uiState.value = _uiState.value.copy(
             grid = grid,
-            currentRow = _uiState.value.currentRow + 1,
+            currentRow = if (!userHasWon) _uiState.value.currentRow + 1 else _uiState.value.currentRow,
             currentMotusLetter = 0,
             wordToDiscover = wordToDiscover
         )
+
         updateKeyboardKeysColor()
+
+        if(!userHasWon)
+            updatePointsToWin()
+
+        _uiState.update {
+            _uiState.value.copy(
+                userHasWon = userHasWon
+            )
+        }
+
+        return userHasWon
+    }
+
+    private fun updatePointsToWin(){
+        _uiState.update {
+            _uiState.value.copy(
+                pointsToWin = _uiState.value.pointsToWin - 1
+            )
+        }
     }
 
     private fun updateKeyboardKeysColor() {
@@ -203,8 +231,8 @@ class MotusViewModel (
 
 
     fun onResetRow() {
-        if (_uiState.value.grid.isEmpty())
-            return
+        if (_uiState.value.grid.isEmpty()) return
+        if (_uiState.value.userHasWon) return
 
         val currentGrid = _uiState.value.grid.toMutableList()
         currentGrid[_uiState.value.currentRow] = MutableList(_uiState.value.maxMotusLetter) { MotusLetter(' ') }

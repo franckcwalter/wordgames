@@ -29,8 +29,9 @@ include(":presentation:common")
 include(":presentation:hangman")
 include(":presentation:motus")
 
-include(":model:auth")
+include(":model:user")
 include(":model:gamedata")
 
 include(":core:ui")
 include(":model:local")
+include(":model:distant")

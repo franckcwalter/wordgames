@@ -36,7 +36,8 @@ import org.koin.androidx.compose.getViewModel
 fun GameBase(
     onClue: ()->Unit,
     onQuitGame: ()->Unit,
-    content: @Composable ()->Unit,
+    content: @Composable (onRoundFinished: (Long, Long) -> Unit) -> Unit
+   //  content: @Composable ()->Unit,
 ){
     val viewModel = getViewModel<GameBaseViewModel>()
     val uiState = viewModel.observeGameBaseUiState().collectAsState()
@@ -51,7 +52,6 @@ fun GameBase(
             uiState.value.mode.toString() + " + " + uiState.value.level.toString()
         )
     }
-
 
     BackHandler(onBack = { viewModel.toggleIsDisplayingQuitGame() })
 
@@ -93,7 +93,7 @@ fun GameBase(
             )
             Spacer(Modifier.weight(1f))
             Text(
-                "12432 points",
+                "${uiState.value.totalPoints} points",
                 )
             Spacer(Modifier.weight(1f))
 
@@ -111,7 +111,9 @@ fun GameBase(
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
-            content()
+            content { roundId, points ->
+                viewModel.onRoundFinished(roundId, points)
+            }
         }
     }
 

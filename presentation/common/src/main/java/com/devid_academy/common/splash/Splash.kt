@@ -1,5 +1,6 @@
 package com.devid_academy.common.splash
 
+import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,6 +27,7 @@ import androidx.navigation.NavHostController
 import com.devid_academy.common.R
 import com.devid_academy.ui.model.Route
 import org.koin.androidx.compose.getViewModel
+import java.time.LocalDate
 
 
 @Composable
@@ -39,6 +41,11 @@ fun SplashScreen(
     var userMessage by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
+
+    /*
+    LaunchedEffect(Unit) {
+        viewModel.createGuestUserIfNotExists()
+    }*/
 
     LaunchedEffect(isFetchedComplete) {
         if (!isFetchedComplete) {

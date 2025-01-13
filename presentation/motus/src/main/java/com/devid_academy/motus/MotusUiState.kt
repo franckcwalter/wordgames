@@ -2,6 +2,7 @@ package com.devid_academy.motus
 
 import com.devid_academy.gamedata.LevelEnum
 import com.devid_academy.gamedata.Round
+import com.devid_academy.local.game.RoundLocal
 
 data class MotusUiState(
 
@@ -16,6 +17,10 @@ data class MotusUiState(
     val currentMotusLetter: Int = 0,
     val maxMotusLetter: Int = 6,
 
-    val wordToDiscover: List<MotusLetter> = listOf()
+    val wordToDiscover: List<MotusLetter> = listOf(),
+    val currentRound: Round? = null,
+
+    val pointsToWin: Long = 10L,
+    val userHasWon: Boolean = false
 
 )

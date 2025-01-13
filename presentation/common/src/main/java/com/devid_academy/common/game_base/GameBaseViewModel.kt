@@ -1,14 +1,20 @@
 package com.devid_academy.common.game_base
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.devid_academy.gamedata.GameDataRepository
 import com.devid_academy.gamedata.LevelEnum
 import com.devid_academy.gamedata.ModeEnum
+import com.devid_academy.ui.SharedPrefsManager
+import com.devid_academy.ui.SharedPrefsManager.USER_ID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class GameBaseViewModel(
-
+    private val gameDataRepository: GameDataRepository
 ): ViewModel() {
 
     private val uiState = MutableStateFlow(GameBaseUiState())
@@ -33,8 +39,34 @@ class GameBaseViewModel(
                 }
             )
         }
+        getTotalPoints()
     }
 
+    private fun getTotalPoints(){
+        viewModelScope.launch {
+            Log.e("getTotalPoints","${gameDataRepository.getTotalPoints()}")
+            uiState.update {
+                uiState.value.copy(
+                    totalPoints = gameDataRepository.getTotalPoints()
+                )
+            }
+        }
+    }
+
+    fun onRoundFinished(roundId: Long, points: Long) {
+
+        Log.e("GameBaseViewModel  onRoundFinished() ", "roundId: $roundId + points: $points")
+        
+        viewModelScope.launch {
+            gameDataRepository.insertFinishedRound(roundId, points, SharedPrefsManager[USER_ID])
+        }
+
+        uiState.update {
+            uiState.value.copy(
+                totalPoints = uiState.value.totalPoints + points
+            )
+        }
+    }
 
     fun toggleIsDisplayingQuitGame() {
         uiState.update {

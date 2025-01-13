@@ -1,5 +1,6 @@
 package com.devid_academy.motus
 
+import android.graphics.Paint.Align
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,24 +63,40 @@ fun MotusScreen(
     GameBase(
         onClue = {},
         onQuitGame = { navController.popBackStack() }
-    ) {
-        MotusContent(
-            innerPadding = innerPadding,
-            uiState = uiState,
-            keyboardUiState = keyboardUiState,
-            startGame = {
-                viewModel.setGridAndSetWord()
-            },
-            onLetterClick = {
-                viewModel.addLetterToGrid(it)
-            },
-            onCheckClick = {
-                viewModel.checkWord()
-            },
-            onResetRow = {
-                viewModel.onResetRow()
-            }
-        )
+    ) { onRoundFinished ->
+
+        Box() { // TODO : box to delete
+            MotusContent(
+                innerPadding = innerPadding,
+                uiState = uiState,
+                keyboardUiState = keyboardUiState,
+                startGame = {
+                    viewModel.setGridAndSetWord()
+                },
+                onLetterClick = {
+                    viewModel.addLetterToGrid(it)
+                },
+                onCheckClick = {
+                    if (viewModel.checkWord()){
+                        uiState.currentRound?.let {
+                            onRoundFinished(it.id, uiState.pointsToWin)
+                        }
+                    }
+                },
+                onResetRow = {
+                    viewModel.onResetRow()
+                }
+            )
+
+            /*
+            Button(
+                onClick = {
+
+                },
+                modifier = Modifier.align(Alignment.Center)){
+                    Text("TEST game finished ")
+            }*/
+        }
     }
 }
 
@@ -117,6 +135,14 @@ fun MotusContent(
             }
         }*/
 
+        Row {
+            Spacer(Modifier.weight(1f))
+            Text("Points à gagner : ${uiState.pointsToWin} points")
+        }
+        Row {
+            Text("${ uiState.wordToDiscover.map { it.letter } }")
+        }
+
         MotusGrid(uiState)
 
         Spacer(Modifier.height(50.dp))
@@ -130,22 +156,24 @@ fun MotusContent(
 
         Spacer(Modifier.height(50.dp))
 
-
         Row {
             AllCapsButton(
-                label = "START",
+                label = if (!uiState.userHasWon)  "COMMENCER" else "NOUVELLE PARTIE",
                 onClick = { startGame() }
             )
-            Spacer(Modifier.width(8.dp))
-            AllCapsButton(
-                label = "reset row",
-                onClick = { onResetRow() }
-            )
-            Spacer(Modifier.width(8.dp))
-            AllCapsButton(
-                label = "check",
-                onClick = { onCheckClick() }
-            )
+
+            if (!uiState.userHasWon){
+                Spacer(Modifier.width(8.dp))
+                AllCapsButton(
+                    label = "reset row",
+                    onClick = { onResetRow() }
+                )
+                Spacer(Modifier.width(8.dp))
+                AllCapsButton(
+                    label = "check",
+                    onClick = { onCheckClick() }
+                )
+            }
         }
     }
 }

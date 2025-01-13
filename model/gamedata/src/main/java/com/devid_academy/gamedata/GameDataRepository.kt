@@ -1,16 +1,23 @@
 package com.devid_academy.gamedata
 
 import android.util.Log
-import com.devid_academy.local.GameLocal
-import com.devid_academy.local.LevelLocal
+import com.devid_academy.local.game.GameLocal
+import com.devid_academy.local.game.LevelLocal
 import com.devid_academy.local.LocalDatabase
-import com.devid_academy.local.RoundLocal
+import com.devid_academy.local.game.RoundLocal
+import com.devid_academy.local.game.UserRoundLocal
+import com.devid_academy.distant.ApiResult
+import com.devid_academy.distant.handleApi
 import retrofit2.HttpException
+import java.time.LocalDateTime
+import java.util.UUID
 
 interface GameDataRepository {
     suspend fun fetchGamesWithData(): ApiResult<List<Game>>
     suspend fun insertGamesWithDataIntoLocalDb(gamesWithData: List<Game>)
     suspend fun getRoundsByGameAndLevel(gameName: String, levelName: String): List<Round>
+    suspend fun insertFinishedRound(roundId: Long, points: Long, userId: UUID)
+    suspend fun getTotalPoints(): Long
 }
 
 class GameDataRepositoryImpl(
@@ -66,6 +73,23 @@ class GameDataRepositoryImpl(
         return localdb.gameDataDao().getRoundsByGameAndLevel(gameName, levelName)
             .map { mapRoundLocalToRound(it) }
     }
+
+    override suspend fun insertFinishedRound(roundId: Long, points: Long, userId: UUID){
+        localdb.gameDataDao().insertFinishedRound(
+            UserRoundLocal(
+                id = 0,
+                userId = userId,
+                datetime = LocalDateTime.now(),
+                points = points,
+                roundId = roundId
+            )
+        )
+    }
+
+    override suspend fun getTotalPoints(): Long {
+        return localdb.gameDataDao().getTotalPoints()
+    }
+
 
 
     /***** MAPPERS *****/

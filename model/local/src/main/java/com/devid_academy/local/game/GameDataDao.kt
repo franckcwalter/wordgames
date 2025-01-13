@@ -1,4 +1,4 @@
-package com.devid_academy.local
+package com.devid_academy.local.game
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -15,7 +15,6 @@ interface GameDataDao {
     suspend fun gameWithSameHashExists(gameId: Long, hash: String): Int
 
 
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllLevels(levels: List<LevelLocal>)
 
@@ -23,13 +22,22 @@ interface GameDataDao {
     suspend fun insertAllRounds(rounds: List<RoundLocal>)
 
 
-
     @Query("""
     SELECT round.id, round.data, round.level_id FROM round
     INNER JOIN level ON round.level_id = level.id
     INNER JOIN game ON level.game_id = game.id
     WHERE game.name = :gameName AND level.name = :levelName
-""")
+    """)
     suspend fun getRoundsByGameAndLevel(gameName: String, levelName: String): List<RoundLocal>
+
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE) // TODO : see if conflict strategy is relevant
+    suspend fun insertFinishedRound(userRound: UserRoundLocal)
+
+    @Query("""
+    SELECT SUM(points) 
+    FROM user_round
+    """)
+    suspend fun getTotalPoints(): Long
 
 }

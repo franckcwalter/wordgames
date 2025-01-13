@@ -15,6 +15,8 @@ data class GameBaseUiState(
     val mode: ModeEnum = ModeEnum.NORMAL,
 
     val levelText: String = "",
-    val modeText: String = ""
+    val modeText: String = "",
+
+    val totalPoints: Long = 0
 
 )

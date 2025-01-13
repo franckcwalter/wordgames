@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.devid_academy.wordgames"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -58,11 +58,15 @@ android {
 
 dependencies {
 
+    // app modules
     implementation(projects.presentation.common)
     implementation(projects.presentation.hangman)
     implementation(projects.presentation.motus)
     implementation(projects.core.ui)
     implementation(projects.model.gamedata)
+    implementation(projects.model.user)
+    implementation(projects.model.local)
+    implementation(projects.model.distant)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -70,7 +74,6 @@ dependencies {
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(project(":model:local"))
 
     debugImplementation(libs.ui.tooling)
 

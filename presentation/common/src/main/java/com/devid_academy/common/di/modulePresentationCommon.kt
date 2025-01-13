@@ -8,8 +8,8 @@ import org.koin.dsl.module
 
 val modulePresentationCommon = module {
 
-    viewModel { SplashViewModel(get()) }
+    viewModel { SplashViewModel(get(), get()) }
     viewModel { HomeViewModel() }
-    viewModel { GameBaseViewModel() }
+    viewModel { GameBaseViewModel(get()) }
 
 }
