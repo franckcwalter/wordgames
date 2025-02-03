@@ -107,6 +107,17 @@ class MotusViewModel (
     }
 
 
+    private fun checkLoseCondition() {
+        if (!_uiState.value.userHasWon && 
+            (_uiState.value.currentRow == _uiState.value.maxRows || _uiState.value.pointsToWin <= 0)) {
+            _uiState.update {
+                it.copy(userHasLost = true)
+            }
+            // TODO: inform user they have lost 
+            setGridAndSetWord()
+        }
+    }
+
     fun checkWord(): Boolean {
         val grid = _uiState.value.grid
         val wordToDiscover = _uiState.value.wordToDiscover.toMutableList()
@@ -176,6 +187,8 @@ class MotusViewModel (
                 userHasWon = userHasWon
             )
         }
+
+        checkLoseCondition()  
 
         return userHasWon
     }

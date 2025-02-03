@@ -21,6 +21,7 @@ data class MotusUiState(
     val currentRound: Round? = null,
 
     val pointsToWin: Long = 10L,
-    val userHasWon: Boolean = false
+    val userHasWon: Boolean = false,
+    val userHasLost: Boolean = false
 
 )

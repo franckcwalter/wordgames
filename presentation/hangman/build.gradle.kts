@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(project(":presentation:common"))
+    implementation(project(":model:gamedata"))
 
 
     testImplementation(libs.junit)
@@ -65,5 +66,10 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.fragment:fragment-ktx:1.7.0")
+
+
+    // Koin
+    implementation(libs.koin.core)
+    implementation(libs.koin.androidx.compose)
 
 }

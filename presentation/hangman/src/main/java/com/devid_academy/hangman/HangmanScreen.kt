@@ -32,6 +32,8 @@ import com.devid_academy.ui.composables.Keyboard
 import com.devid_academy.ui.composables.KeyboardUiState
 import com.devid_academy.core.ui.R
 import com.devid_academy.ui.composables.AllCapsButton
+import org.koin.androidx.compose.getViewModel
+
 
 @Composable
 fun HangmanScreen(
@@ -39,7 +41,7 @@ fun HangmanScreen(
     innerPadding: PaddingValues = PaddingValues()
 ) {
 
-    val viewModel : HangmanViewModel = viewModel()
+    val viewModel = getViewModel<HangmanViewModel>()
 
     val uiState by viewModel.observeHangmanUiState().collectAsState()
     val keyboardUiState by viewModel.observeKeyboardUiState().collectAsState()
@@ -47,13 +49,18 @@ fun HangmanScreen(
     GameBase(
         onQuitGame = { navController.popBackStack() },
         onClue = {  }
-    ){
+    ){ onRoundFinished ->
+
         HangmanContent(
             innerPadding = innerPadding,
             uiState = uiState,
             keyboardUiState = keyboardUiState,
             onLetterClick = {
-                viewModel.onLetterClicked(it)
+                if (viewModel.onLetterClicked(it)) {
+                    uiState.currentRound?.let { currentRound ->
+                        onRoundFinished(currentRound.id, uiState.pointsToWin)
+                    }
+                }
             },
             setNewWord = {
                 viewModel.setWord()
@@ -77,7 +84,7 @@ fun HangmanContent(
     ) {
 
         Text(
-            text = uiState.counter.toString(),
+            text = uiState.pointsToWin.toString(),
             fontFamily = FontFamily(Font(R.font.kanit_regular)),
             fontSize = 35.sp,
             textAlign = TextAlign.End,
@@ -86,6 +93,9 @@ fun HangmanContent(
                 .fillMaxWidth()
                 .padding(end = 50.dp, bottom = 50.dp)
         )
+
+        Text("${ uiState.wordToDiscover.map { it.letter } }")
+
 
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -139,12 +149,12 @@ fun HangmanContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ){
-
-            AllCapsButton(
-                label = "START",
-                onClick = { setNewWord() },
-            )
-
+            if (uiState.wordToDiscover.isEmpty() || uiState.userHasWon){
+                AllCapsButton(
+                    label = if (!uiState.userHasWon)  "COMMENCER" else "NOUVELLE PARTIE",
+                    onClick = { setNewWord() },
+                )
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ import com.devid_academy.gamedata.di.moduleModelGamedata
 import com.devid_academy.local.moduleModelLocalDB
 import com.devid_academy.motus.moduleUiMotus
 import com.devid_academy.distant.moduleNetwork
+import com.devid_academy.hangman.moduleUiHangman
 import com.devid_academy.ui.SharedPrefsManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -22,10 +23,14 @@ class App : Application() {
             modules(
                 modulePresentationCommon,
                 moduleNetwork,
+                moduleModelLocalDB,
+
+
                 moduleModelGamedata,
                 moduleModelUser,
+
                 moduleUiMotus,
-                moduleModelLocalDB
+                moduleUiHangman
             )
         }
         SharedPrefsManager.init(this)
