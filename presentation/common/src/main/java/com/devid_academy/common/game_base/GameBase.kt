@@ -37,7 +37,6 @@ fun GameBase(
     onClue: ()->Unit,
     onQuitGame: ()->Unit,
     content: @Composable (onRoundFinished: (Long, Long) -> Unit) -> Unit
-   //  content: @Composable ()->Unit,
 ){
     val viewModel = getViewModel<GameBaseViewModel>()
     val uiState = viewModel.observeGameBaseUiState().collectAsState()
@@ -123,7 +122,10 @@ fun GameBase(
             updateLevelSliderPosition = { viewModel.updateLevelSlider(it) },
             updateModeSliderPosition = { viewModel.updateModeSlider(it) },
             onStartTutorial = { viewModel.startTutorial() },
-            onQuitGame = { onQuitGame() },
+            onQuitGame = {
+                onQuitGame()
+                viewModel.postRoundsFinished()
+            },
             onCloseAndCommitChanges = { viewModel.closeModalAndCommitChanges() },
             onClose = { viewModel.toggleIsDisplayingSettings() },
         )
@@ -131,7 +133,10 @@ fun GameBase(
     if (uiState.value.isDisplayingQuitGame){
         QuitGameModale(
             onStay = { viewModel.toggleIsDisplayingQuitGame() },
-            onQuit = { onQuitGame() },
+            onQuit = {
+                onQuitGame()
+                viewModel.postRoundsFinished()
+            },
             stayButtonLabel = "RETOUR AU JEU",
             quitButtonLabel = "Quitter le jeu",
             text = "Voulez-vous vraiment\nquitter le jeu? "

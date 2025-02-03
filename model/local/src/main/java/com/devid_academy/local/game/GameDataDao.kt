@@ -34,6 +34,9 @@ interface GameDataDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE) // TODO : see if conflict strategy is relevant
     suspend fun insertFinishedRound(userRound: UserRoundLocal)
 
+    @Query("SELECT * FROM user_round")
+    suspend fun getAllUserRounds(): List<UserRoundLocal>
+
     @Query("""
     SELECT SUM(points) 
     FROM user_round

@@ -12,18 +12,19 @@ import retrofit2.HttpException
 import java.time.LocalDateTime
 import java.util.UUID
 
-interface GameDataRepository {
+interface GameRepository {
     suspend fun fetchGamesWithData(): ApiResult<List<Game>>
     suspend fun insertGamesWithDataIntoLocalDb(gamesWithData: List<Game>)
     suspend fun getRoundsByGameAndLevel(gameName: String, levelName: String): List<Round>
     suspend fun insertFinishedRound(roundId: Long, points: Long, userId: UUID)
+    suspend fun postRoundsFinished(): ApiResult<Unit>
     suspend fun getTotalPoints(): Long
 }
 
-class GameDataRepositoryImpl(
+class GameRepositoryImpl(
     private val apiService: GameDataService,
     private val localdb: LocalDatabase
-) : GameDataRepository {
+) : GameRepository {
 
     override suspend fun fetchGamesWithData(): ApiResult<List<Game>> {
         return try {
@@ -90,9 +91,32 @@ class GameDataRepositoryImpl(
         return localdb.gameDataDao().getTotalPoints()
     }
 
+    override suspend fun postRoundsFinished(): ApiResult<Unit> {
+
+        // TODO: amélioration : n'envoyer que les dernières parties jouées ?
+        val allUserRounds = localdb.gameDataDao().getAllUserRounds()
+            .map{ mapUserRoundLocalToUserRound(it) }
+
+        return try {
+            val response = handleApi { apiService.postFinishedRounds(allUserRounds) }
+            Log.e("GameDataRepositoryImpl","postRoundsFinished() response : $response")
+
+            if (response is ApiResult.Success) {
+                // TODO: something ?
+            }
+            response
+        } catch (e: HttpException) {
+            ApiResult.Error(e, e.code())
+        } catch (e: Throwable) {
+            ApiResult.Error(e)
+        }
+    }
+
 
 
     /***** MAPPERS *****/
+
+    // TODO : faire des extensions sur les data class
 
     private fun mapRoundLocalToRound(roundLocal: RoundLocal): Round {
         return Round(
@@ -126,4 +150,15 @@ class GameDataRepositoryImpl(
             levelId = levelId
         )
     }
+
+    private fun mapUserRoundLocalToUserRound(roundLocal: UserRoundLocal): UserRound {
+        return UserRound(
+            id = roundLocal.id,
+            userId = roundLocal.userId,
+            roundId = roundLocal.roundId,
+            dateTime = roundLocal.datetime,
+            points = roundLocal.points
+        )
+    }
+
 }

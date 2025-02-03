@@ -2,7 +2,6 @@ package com.devid_academy.auth
 
 import com.devid_academy.local.RoleEnum
 import com.google.gson.annotations.SerializedName
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
