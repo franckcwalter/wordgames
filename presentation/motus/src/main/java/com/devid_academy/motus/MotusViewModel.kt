@@ -204,35 +204,31 @@ class MotusViewModel (
     private fun updateKeyboardKeysColor() {
         val grid = _uiState.value.grid
         val keyboardState = _keyboardUiState.value
-
-        // Create a mutable copy of the keyboard letter list
         val updatedKeyboardLetterList = keyboardState.keyboardLetterList.map { it.toMutableList() }.toMutableList()
 
-        // Iterate through the grid to update the keyboard keys color
         grid.flatten().forEach { motusLetter ->
-            if (motusLetter.state == MotusLetterState.NOT_INSIDE_WORD) {
-                // Find the key in the keyboardLetterList and update its color
-                for (row in updatedKeyboardLetterList) {
-                    row.forEachIndexed { index, key ->
-                        if (key.letter == motusLetter.letter) {
-                            row[index] = key.copy(
-                                keyColor = Color(0xFFDB1A1A),
-                                // letterColor = Color(0xFFFFFFFF),
-                                isClickable = false
-                            )
+            for (row in updatedKeyboardLetterList) {
+                row.forEachIndexed { index, key ->
+                    if (key.letter == motusLetter.letter) {
+                        val keyColor = when (motusLetter.state) {
+                            MotusLetterState.CORRECT -> Color(0xFF54DB1A)      // Vert
+                            MotusLetterState.INSIDE_WORD -> Color(0xFFFFB74D)  // Orange
+                            MotusLetterState.NOT_INSIDE_WORD -> Color(0xFFDB1A1A) // Rouge
+                            else -> key.keyColor
                         }
+                        row[index] = key.copy(
+                            keyColor = keyColor,
+                            isClickable = motusLetter.state != MotusLetterState.NOT_INSIDE_WORD
+                        )
                     }
                 }
             }
         }
 
-        // Convert the mutable list back to an immutable list
         val immutableKeyboardLetterList = updatedKeyboardLetterList.map { it.toList() }.toMutableList()
-
-        // Update the keyboard UI state with the new list
-        _keyboardUiState.value = _keyboardUiState.value.copy(
-            keyboardLetterList = immutableKeyboardLetterList
-        )
+        _keyboardUiState.update { 
+            it.copy(keyboardLetterList = immutableKeyboardLetterList)
+        }
     }
 
 
