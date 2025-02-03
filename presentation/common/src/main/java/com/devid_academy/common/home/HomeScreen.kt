@@ -47,7 +47,7 @@ import com.devid_academy.common.common.MediumButton
 import com.devid_academy.common.common.Background
 import com.devid_academy.common.common.SquareIconButton
 import com.devid_academy.common.game_base.QuitGameModale
-import com.devid_academy.ui.model.Route
+import com.devid_academy.ui.Route
 import org.koin.androidx.compose.getViewModel
 
 

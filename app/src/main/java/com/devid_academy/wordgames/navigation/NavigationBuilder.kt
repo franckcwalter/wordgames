@@ -8,7 +8,7 @@ import com.devid_academy.common.home.HomeScreen
 import com.devid_academy.common.splash.SplashScreen
 import com.devid_academy.hangman.HangmanScreen
 import com.devid_academy.motus.MotusScreen
-import com.devid_academy.ui.model.Route
+import com.devid_academy.ui.Route
 
 
 object NavigationBuilder {

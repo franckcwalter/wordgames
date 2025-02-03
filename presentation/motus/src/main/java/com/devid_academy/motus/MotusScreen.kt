@@ -62,41 +62,33 @@ fun MotusScreen(
 
     GameBase(
         onClue = {},
-        onQuitGame = { navController.popBackStack() }
+        onQuitGame = {
+            navController.popBackStack()
+            viewModel.resetUiState()
+        }
     ) { onRoundFinished ->
 
-        Box() { // TODO : box to delete
-            MotusContent(
-                innerPadding = innerPadding,
-                uiState = uiState,
-                keyboardUiState = keyboardUiState,
-                startGame = {
-                    viewModel.setGridAndSetWord()
-                },
-                onLetterClick = {
-                    viewModel.addLetterToGrid(it)
-                },
-                onCheckClick = {
-                    if (viewModel.checkWord()){
-                        uiState.currentRound?.let {
-                            onRoundFinished(it.id, uiState.pointsToWin)
-                        }
+        MotusContent(
+            innerPadding = innerPadding,
+            uiState = uiState,
+            keyboardUiState = keyboardUiState,
+            startGame = {
+                viewModel.setGridAndSetWord()
+            },
+            onLetterClick = {
+                viewModel.addLetterToGrid(it)
+            },
+            onCheckClick = {
+                if (viewModel.checkWord()){
+                    uiState.currentRound?.let {
+                        onRoundFinished(it.id, uiState.pointsToWin)
                     }
-                },
-                onResetRow = {
-                    viewModel.onResetRow()
                 }
-            )
-
-            /*
-            Button(
-                onClick = {
-
-                },
-                modifier = Modifier.align(Alignment.Center)){
-                    Text("TEST game finished ")
-            }*/
-        }
+            },
+            onResetRow = {
+                viewModel.onResetRow()
+            }
+        )
     }
 }
 
@@ -157,12 +149,12 @@ fun MotusContent(
         Spacer(Modifier.height(50.dp))
 
         Row {
-            AllCapsButton(
-                label = if (!uiState.userHasWon)  "COMMENCER" else "NOUVELLE PARTIE",
-                onClick = { startGame() }
-            )
-
-            if (!uiState.userHasWon){
+            if (uiState.wordToDiscover.isEmpty() || uiState.userHasWon){
+                AllCapsButton(
+                    label = if (!uiState.userHasWon)  "COMMENCER" else "NOUVELLE PARTIE",
+                    onClick = { startGame() }
+                )
+            } else {
                 Spacer(Modifier.width(8.dp))
                 AllCapsButton(
                     label = "reset row",
@@ -170,7 +162,7 @@ fun MotusContent(
                 )
                 Spacer(Modifier.width(8.dp))
                 AllCapsButton(
-                    label = "check",
+                    label = "VÉRIFIER",
                     onClick = { onCheckClick() }
                 )
             }

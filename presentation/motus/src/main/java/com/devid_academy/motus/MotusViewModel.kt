@@ -25,7 +25,6 @@ class MotusViewModel (
     private val _keyboardUiState = MutableStateFlow(KeyboardUiState())
     fun observeKeyboardUiState(): StateFlow<KeyboardUiState> = _keyboardUiState
 
-
     fun getGameData(){
         viewModelScope.launch {
             val response = gameRepository.getRoundsByGameAndLevel("motus", LevelEnum.EASY.toString())
@@ -36,57 +35,51 @@ class MotusViewModel (
             }
 
             Log.d("MotusViewModel getGameData", "Updated state: ${_uiState.value}")
-
         }
     }
 
-    fun setGridAndSetWord(){
-
+    fun setGridAndSetWord() {
+        Log.e("MotusViewModel", "setGridAndSetWord()")
+        
+        // Préparer la grille
+        val tempGrid = mutableListOf<MutableList<MotusLetter>>()
+        for (i in 0 until 6) {
+            val row = mutableListOf<MotusLetter>()
+            for (j in 0 until 6) {
+                row.add(MotusLetter(' '))
+            }
+            tempGrid.add(row)
+        }
+    
+        // Préparer le mot à découvrir et le round
+        var newWordToDiscover = listOf<MotusLetter>()
+        var newCurrentRound = _uiState.value.currentRound
+        
+        if (_uiState.value.wordList.isNotEmpty()) {
+            val round = _uiState.value.wordList[(Math.random() * _uiState.value.wordList.size).toInt()]
+            newWordToDiscover = round.data[0].map { MotusLetter(it.uppercaseChar()) }
+            newCurrentRound = round
+        }
+    
+        // Mise à jour unique de l'état
         _uiState.update {
             it.copy(
-                grid = mutableListOf(),
+                grid = tempGrid,
                 currentRow = 0,
                 maxRows = 6,
                 currentMotusLetter = 0,
                 maxMotusLetter = 6,
-                wordToDiscover = listOf(),
+                wordToDiscover = newWordToDiscover,
+                currentRound = newCurrentRound,
                 pointsToWin = 10,
                 userHasWon = false
             )
         }
+        
+        // Reset du clavier
         _keyboardUiState.value = KeyboardUiState()
-
-        // draw grid
-        viewModelScope.launch {
-            val tempGrid = mutableListOf<MutableList<MotusLetter>>()
-            for (i in 0 until _uiState.value.maxRows) {
-                val row = mutableListOf<MotusLetter>()
-                for (j in 0 until _uiState.value.maxMotusLetter) {
-                    row.add(MotusLetter(' '))
-                    _uiState.value = _uiState.value.copy(grid = tempGrid.toMutableList().apply {
-                        if (size > i) set(i, row.toList().toMutableList())
-                        else add(row.toList().toMutableList())
-                    })
-                    // delay(30)
-                }
-                tempGrid.add(row)
-            }
-        }
-
-        // Set word to discover
-        if (_uiState.value.wordList.isNotEmpty() ){
-            val round = _uiState.value.wordList[(Math.random() * 100 % _uiState.value.wordList.size).roundToInt()]
-            _uiState.update {
-                _uiState.value.copy(
-                    wordToDiscover = round
-                        .data[0]
-                        .map { MotusLetter(it.uppercaseChar()) },
-                    currentRound = round
-                )
-            }
-        }
-
     }
+
 
     fun addLetterToGrid(letterClicked: Char) {
 
@@ -243,4 +236,21 @@ class MotusViewModel (
         )
     }
 
+    fun resetUiState() {
+        _uiState.update {
+            MotusUiState(
+                wordList = it.wordList,
+                grid = mutableListOf(),
+                currentRow = 0,
+                maxRows = 6,
+                currentMotusLetter = 0,
+                maxMotusLetter = 6,
+                wordToDiscover = listOf(),
+                currentRound = null,
+                pointsToWin = 10,
+                userHasWon = false
+            )
+        }
+        _keyboardUiState.value = KeyboardUiState()
+    }
 }

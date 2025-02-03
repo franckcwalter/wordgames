@@ -1,6 +1,5 @@
 package com.devid_academy.common.splash
 
-import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,9 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.devid_academy.common.R
-import com.devid_academy.ui.model.Route
+import com.devid_academy.ui.Route
 import org.koin.androidx.compose.getViewModel
-import java.time.LocalDate
 
 
 @Composable

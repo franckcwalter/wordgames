@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.devid_academy.ui.model.Route
+import com.devid_academy.ui.Route
 import com.devid_academy.wordgames.navigation.NavigationBuilder.setHangmanScreen
 import com.devid_academy.wordgames.navigation.NavigationBuilder.setHomeScreen
 import com.devid_academy.wordgames.navigation.NavigationBuilder.setMotusScreen

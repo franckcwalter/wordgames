@@ -1,4 +1,4 @@
-package com.devid_academy.ui.model
+package com.devid_academy.ui
 
 sealed class Route(val name: String) {
     data object SplashScreen : Route("splash")
