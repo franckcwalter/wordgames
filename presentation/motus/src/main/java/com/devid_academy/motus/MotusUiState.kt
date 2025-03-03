@@ -1,8 +1,8 @@
 package com.devid_academy.motus
 
-import com.devid_academy.gamedata.LevelEnum
 import com.devid_academy.gamedata.Round
 import com.devid_academy.local.game.RoundLocal
+import com.devid_academy.ui.LevelEnum
 
 data class MotusUiState(
 

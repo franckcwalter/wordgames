@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,19 +31,22 @@ import androidx.compose.ui.unit.dp
 import com.devid_academy.common.R
 import com.devid_academy.common.common.SquareIconButton
 import com.devid_academy.common.utils.getRandomColor
+import com.devid_academy.ui.LevelEnum
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun GameBase(
-    onClue: ()->Unit,
-    onQuitGame: ()->Unit,
+    gameName: String,
+    onClue: () -> Unit,
+    onQuitGame: () -> Unit,
+    onUpdateLevel: (LevelEnum) -> Unit,
     content: @Composable (onRoundFinished: (Long, Long) -> Unit) -> Unit
 ){
     val viewModel = getViewModel<GameBaseViewModel>()
     val uiState = viewModel.observeGameBaseUiState().collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.init()
+        viewModel.init(gameName)
     }
 
     LaunchedEffect(uiState.value.mode, uiState.value.level) {
@@ -91,9 +95,10 @@ fun GameBase(
                 contentDescription = null
             )
             Spacer(Modifier.weight(1f))
-            Text(
-                "${uiState.value.totalPoints} points",
-                )
+            Column(verticalArrangement = Arrangement.Center) {
+                Text("${uiState.value.totalPoints} points")
+                Text("level: ${uiState.value.level}")
+            }
             Spacer(Modifier.weight(1f))
 
             SquareIconButton(
@@ -119,7 +124,9 @@ fun GameBase(
     if (uiState.value.isDisplayingSettings){
         SettingsModal(
             uiState = uiState.value,
-            updateLevelSliderPosition = { viewModel.updateLevelSlider(it) },
+            updateLevelSliderPosition = {
+                onUpdateLevel(viewModel.updateLevelSlider(it))
+            },
             updateModeSliderPosition = { viewModel.updateModeSlider(it) },
             onStartTutorial = { viewModel.startTutorial() },
             onQuitGame = {
@@ -150,8 +157,10 @@ fun GameBase(
 @Composable
 private fun GameBasePreview() {
     GameBase(
+        gameName = "name",
         onClue = { },
         onQuitGame = { },
+        onUpdateLevel = {_ -> },
         content = {
             Box(
                 Modifier

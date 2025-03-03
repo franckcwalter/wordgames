@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devid_academy.gamedata.GameRepository
-import com.devid_academy.gamedata.LevelEnum
-import com.devid_academy.gamedata.ModeEnum
+import com.devid_academy.ui.LevelEnum
+import com.devid_academy.ui.ModeEnum
 import com.devid_academy.ui.SharedPrefsManager
 import com.devid_academy.ui.SharedPrefsManager.USER_ID
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,18 +20,12 @@ class GameBaseViewModel(
     private val uiState = MutableStateFlow(GameBaseUiState())
     fun observeGameBaseUiState(): StateFlow<GameBaseUiState> = uiState
 
-    fun init() {
-        // TODO : voir avec quoi initialiser ?
-        // idéalement : garder en mémoire la difficulté et le mode choisi précédemment
+    fun init(gameName: String) {
+
         uiState.update {
             it.copy(
-                levelText = when(uiState.value.level){
-                    LevelEnum.EASY -> "FACILE"
-                    LevelEnum.MEDIUM -> "NORMAL"
-                    LevelEnum.HARD -> "DIFFICILE"
-                    LevelEnum.EXTREME -> "EXTRÊME"
-                    else -> { "" }
-                },
+                levelText = uiState.value.level.displayName,
+
                 modeText = when(uiState.value.mode){
                     ModeEnum.NORMAL -> "Normal"
                     ModeEnum.CHRONO -> "Chrono"
@@ -40,6 +34,7 @@ class GameBaseViewModel(
             )
         }
         getTotalPoints()
+        getLevelForGame(gameName)
     }
 
     private fun getTotalPoints(){
@@ -48,6 +43,23 @@ class GameBaseViewModel(
             uiState.update {
                 uiState.value.copy(
                     totalPoints = gameRepository.getTotalPoints()
+                )
+            }
+        }
+    }
+
+    private fun getLevelForGame(gameName: String) {
+        viewModelScope.launch {
+
+            val level = gameRepository.getLevelByGameName(gameName)
+            uiState.update {
+                uiState.value.copy(
+                    level = level,
+                    levelSliderPosition = when(level){
+                        LevelEnum.EASY -> 1f
+                        LevelEnum.MEDIUM -> 2f
+                        LevelEnum.HARD -> 3f
+                    }
                 )
             }
         }
@@ -83,7 +95,6 @@ class GameBaseViewModel(
                     1f -> LevelEnum.EASY
                     2f -> LevelEnum.MEDIUM
                     3f -> LevelEnum.HARD
-                    4f -> LevelEnum.EXTREME
                     else -> { LevelEnum.EASY }
                 },
                 mode = when(uiState.value.modeSliderPosition){
@@ -104,25 +115,24 @@ class GameBaseViewModel(
             )
         }
     }
+    fun updateLevelSlider(sliderPosition: Float): LevelEnum {
+        val level = when (sliderPosition) {
+            1f -> LevelEnum.EASY
+            2f -> LevelEnum.MEDIUM
+            3f -> LevelEnum.HARD
+            else -> LevelEnum.EASY
+        }
 
-    fun updateLevelSlider(sliderPosition: Float) {
         uiState.update {
             it.copy(
-                levelSliderPosition = sliderPosition
+                levelSliderPosition = sliderPosition,
+                levelText = level.displayName
             )
         }
-        uiState.update {
-            it.copy(
-                levelText = when (sliderPosition) {
-                    1f -> "facile"
-                    2f -> "normal"
-                    3f -> "difficile"
-                    4f -> "extrême"
-                    else -> { "" }
-                }
-            )
-        }
+
+        return level
     }
+
 
     fun updateModeSlider(sliderPosition: Float) {
         uiState.update {
@@ -143,7 +153,7 @@ class GameBaseViewModel(
     }
 
     fun startTutorial() {
-        //   TODO("Not yet implemented")
+        // TODO("Not yet implemented")
     }
 
     fun postRoundsFinished(){
@@ -151,6 +161,5 @@ class GameBaseViewModel(
             gameRepository.postRoundsFinished()
         }
     }
-
 
 }

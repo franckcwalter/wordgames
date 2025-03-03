@@ -31,6 +31,12 @@ interface GameDataDao {
     suspend fun getRoundsByGameAndLevel(gameName: String, levelName: String): List<RoundLocal>
 
 
+    @Query("""
+    SELECT selected_level FROM game
+    WHERE name = :gameName
+    """)
+    suspend fun getSelectedLevelForGame(gameName: String): String
+
     @Insert(onConflict = OnConflictStrategy.IGNORE) // TODO : see if conflict strategy is relevant
     suspend fun insertFinishedRound(userRound: UserRoundLocal)
 
@@ -42,5 +48,12 @@ interface GameDataDao {
     FROM user_round
     """)
     suspend fun getTotalPoints(): Long
+
+    @Query("""
+    UPDATE game
+    SET selected_level = :level
+    WHERE name = :gameName
+    """)
+    suspend fun setSelectedLevelForGame(gameName: String, level: String)
 
 }

@@ -93,15 +93,15 @@ fun SettingsModal(
                             activeTrackColor = mainRed,
                             inactiveTrackColor = Color.White,
                         ),
-                        steps = 2,
-                        valueRange = 1f..4f,
+                        steps = 1,
+                        valueRange = 1f..3f,
                         modifier = Modifier.padding(horizontal = 15.dp)
                     )
                     Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp), Arrangement.Absolute.SpaceBetween){
                         Text("facile")
                         Text("normal")
                         Text("difficile")
-                        Text("extrême")
+                       // Text("extrême")
                     }
                 }
             }

@@ -3,6 +3,8 @@ package com.devid_academy.local.game
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.devid_academy.ui.LevelEnum
+import com.devid_academy.ui.ModeEnum
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -12,7 +14,9 @@ data class GameLocal(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "tutorial") val tutorial: String,
-    @ColumnInfo(name = "gameDataHash") val gameDataHash: String
+    @ColumnInfo(name = "gameDataHash") val gameDataHash: String,
+    @ColumnInfo(name = "selected_level") val selectedLevel: LevelEnum,
+    @ColumnInfo(name = "selected_mode") val selectedMode: ModeEnum
 )
 
 @Entity(tableName = "level")

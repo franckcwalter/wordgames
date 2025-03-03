@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,9 +47,18 @@ fun HangmanScreen(
     val uiState by viewModel.observeHangmanUiState().collectAsState()
     val keyboardUiState by viewModel.observeKeyboardUiState().collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.getGameData()
+    }
+
     GameBase(
+        gameName = "hangman",
         onQuitGame = { navController.popBackStack() },
-        onClue = {  }
+        onClue = {  },
+        onUpdateLevel = { level ->
+            viewModel.getGameData(level)
+            viewModel.resetUiState()
+        }
     ){ onRoundFinished ->
 
         HangmanContent(
@@ -96,12 +106,17 @@ fun HangmanContent(
 
         Text("${ uiState.wordToDiscover.map { it.letter } }")
 
+        Row {
+            Spacer(Modifier.weight(1f))
+            Text("level: ${uiState.level}")
+        }
 
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
 
         ){
+
 
             if (uiState.wordToDiscover.isEmpty()){
                 Text(
@@ -138,7 +153,8 @@ fun HangmanContent(
 
         Keyboard(
             onLetterClick = {
-                onLetterClick(it)
+                if(!uiState.userHasWon)
+                    onLetterClick(it)
             },
             keyboardUiState
         )
@@ -168,8 +184,10 @@ data class HangmanLetter(
 @Composable
 fun HangmanContentPreview() {
     GameBase(
+        gameName = "hangman",
         onQuitGame = { },
-        onClue = {  }
+        onClue = {  },
+        onUpdateLevel = { _ -> }
     ){
         HangmanContent(
             uiState = HangmanUiState(),

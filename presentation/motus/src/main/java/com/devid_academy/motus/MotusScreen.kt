@@ -1,6 +1,5 @@
 package com.devid_academy.motus
 
-import android.graphics.Paint.Align
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,9 +30,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.devid_academy.common.common.Background
 import com.devid_academy.common.game_base.GameBase
 import com.devid_academy.common.utils.getRandomColor
 import com.devid_academy.core.ui.R
@@ -61,9 +57,14 @@ fun MotusScreen(
     }
 
     GameBase(
+        gameName = "motus",
         onClue = {},
         onQuitGame = {
             navController.popBackStack()
+            viewModel.resetUiState()
+        },
+        onUpdateLevel = { level ->
+            viewModel.getGameData(level)
             viewModel.resetUiState()
         }
     ) { onRoundFinished ->
@@ -132,6 +133,11 @@ fun MotusContent(
             Text("Points à gagner : ${uiState.pointsToWin} points")
         }
         Row {
+            Spacer(Modifier.weight(1f))
+            Text("level: ${uiState.level}")
+        }
+
+        Row {
             Text("${ uiState.wordToDiscover.map { it.letter } }")
         }
 
@@ -175,8 +181,10 @@ fun MotusContent(
 @Composable
 private fun MotusContentPreview() {
     GameBase(
+        gameName = "motus",
         onClue = {},
-        onQuitGame = {  }
+        onQuitGame = {},
+        onUpdateLevel = {_->}
     ) {
         MotusContent(
             uiState = MotusUiState().copy(

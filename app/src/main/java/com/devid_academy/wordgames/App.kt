@@ -25,7 +25,6 @@ class App : Application() {
                 moduleNetwork,
                 moduleModelLocalDB,
 
-
                 moduleModelGamedata,
                 moduleModelUser,
 

@@ -1,6 +1,7 @@
 package com.devid_academy.common.home
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Public
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -117,6 +119,9 @@ fun HomeContent(
     onProfile: () -> Unit,
     onStats: () -> Unit
 ){
+
+    val context = LocalContext.current
+
     Box(modifier = Modifier.fillMaxWidth()){
 
         Background()
@@ -205,7 +210,6 @@ fun HomeContentGameCard(
     selectedGameId : String,
     onGameCard: (String) -> Unit
 ){
-
     // TODO : vérif pour le highlight du jeu sélectionné  (card rapetisse)
     Row(
         modifier = Modifier
@@ -230,7 +234,6 @@ fun HomeContentGameCard(
             ),
         verticalAlignment = Alignment.CenterVertically
     ){
-
         Image(
             painter = painterResource(id = gameInfo.imageRes),
             contentDescription = null,
@@ -239,8 +242,7 @@ fun HomeContentGameCard(
                 .size(60.dp),
             contentScale = ContentScale.FillBounds,
         )
-
-        Column(){
+        Column {
             Text(
                 text = gameInfo.name,
                 style = MaterialTheme.typography.titleSmall

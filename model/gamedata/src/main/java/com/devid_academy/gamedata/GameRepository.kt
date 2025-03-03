@@ -8,6 +8,8 @@ import com.devid_academy.local.game.RoundLocal
 import com.devid_academy.local.game.UserRoundLocal
 import com.devid_academy.distant.ApiResult
 import com.devid_academy.distant.handleApi
+import com.devid_academy.ui.LevelEnum
+import com.devid_academy.ui.ModeEnum
 import retrofit2.HttpException
 import java.time.LocalDateTime
 import java.util.UUID
@@ -15,16 +17,18 @@ import java.util.UUID
 interface GameRepository {
     suspend fun fetchGamesWithData(): ApiResult<List<Game>>
     suspend fun insertGamesWithDataIntoLocalDb(gamesWithData: List<Game>)
-    suspend fun getRoundsByGameAndLevel(gameName: String, levelName: String): List<Round>
+    suspend fun getGameDataByGameAndLevel(gameName: String, level: LevelEnum?): GameData
     suspend fun insertFinishedRound(roundId: Long, points: Long, userId: UUID)
     suspend fun postRoundsFinished(): ApiResult<Unit>
     suspend fun getTotalPoints(): Long
+    suspend fun getLevelByGameName(gameName: String): LevelEnum
 }
 
 class GameRepositoryImpl(
     private val apiService: GameDataService,
     private val localdb: LocalDatabase
 ) : GameRepository {
+
 
     override suspend fun fetchGamesWithData(): ApiResult<List<Game>> {
         return try {
@@ -70,9 +74,24 @@ class GameRepositoryImpl(
         }
     }
 
-    override suspend fun getRoundsByGameAndLevel(gameName: String, levelName: String): List<Round> {
-        return localdb.gameDataDao().getRoundsByGameAndLevel(gameName, levelName)
-            .map { mapRoundLocalToRound(it) }
+    override suspend fun getGameDataByGameAndLevel(
+        gameName: String,
+        level: LevelEnum?
+    ): GameData {
+
+        level?.let {
+            localdb.gameDataDao().setSelectedLevelForGame(gameName, it.toString())
+        }
+
+        val selectedLevel = getSelectedLevelForGame(gameName).toLevelEnum()
+
+        return GameData(
+            level = level ?: selectedLevel,
+            rounds = localdb.gameDataDao().getRoundsByGameAndLevel(
+                gameName = gameName,
+                levelName = level?.toString() ?: selectedLevel.toString()
+            ).map { mapRoundLocalToRound(it) }
+        )
     }
 
     override suspend fun insertFinishedRound(roundId: Long, points: Long, userId: UUID){
@@ -89,6 +108,10 @@ class GameRepositoryImpl(
 
     override suspend fun getTotalPoints(): Long {
         return localdb.gameDataDao().getTotalPoints()
+    }
+
+    override suspend fun getLevelByGameName(gameName: String): LevelEnum {
+        return localdb.gameDataDao().getSelectedLevelForGame(gameName).toLevelEnum()
     }
 
     override suspend fun postRoundsFinished(): ApiResult<Unit> {
@@ -113,6 +136,13 @@ class GameRepositoryImpl(
     }
 
 
+    /***** PRIVATE METHODS *****/
+
+
+    private suspend fun getSelectedLevelForGame(level: String): String {
+        return localdb.gameDataDao().getSelectedLevelForGame(level)
+    }
+
 
     /***** MAPPERS *****/
 
@@ -130,7 +160,9 @@ class GameRepositoryImpl(
             id = game.id,
             name = game.name,
             tutorial = game.tutorial.joinToString(separator = ","),
-            gameDataHash = game.gameDataHash
+            gameDataHash = game.gameDataHash,
+            selectedLevel = LevelEnum.EASY,
+            selectedMode = ModeEnum.NORMAL
         )
     }
 
@@ -162,3 +194,17 @@ class GameRepositoryImpl(
     }
 
 }
+
+data class GameData (
+    val rounds: List<Round> = listOf(),
+    val level: LevelEnum = LevelEnum.EASY
+)
+
+fun String.toLevelEnum(default: LevelEnum = LevelEnum.EASY): LevelEnum {
+    return try {
+        enumValueOf<LevelEnum>(this)
+    } catch (e: IllegalArgumentException) {
+        default
+    }
+}
+

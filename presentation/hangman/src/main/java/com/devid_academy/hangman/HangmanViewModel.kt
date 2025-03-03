@@ -5,14 +5,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devid_academy.gamedata.GameRepository
-import com.devid_academy.gamedata.LevelEnum
+import com.devid_academy.ui.LevelEnum
 import com.devid_academy.ui.composables.KeyboardUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 class HangmanViewModel(
     private val gameRepository: GameRepository
@@ -25,20 +24,20 @@ class HangmanViewModel(
     fun observeKeyboardUiState(): StateFlow<KeyboardUiState> = _keyboardUiState
 
 
-    init {
-        getGameData()
-    }
-
-    private fun getGameData(){
+    fun getGameData(level: LevelEnum? = null){
         viewModelScope.launch {
-            val response = gameRepository.getRoundsByGameAndLevel("hangman", LevelEnum.EASY.toString())
+            val response = gameRepository.getGameDataByGameAndLevel("hangman", level)
             Log.d("HangmanViewModel getGameData", "Fetched response: $response")
             _uiState.update { currentState ->
-                currentState.copy(roundList = response)
+                currentState.copy(
+                    roundList = response.rounds,
+                    level = response.level
+                )
             }
             Log.d("HangmanViewModel getGameData", "Updated state: ${_uiState.value}")
         }
     }
+
 
     fun setWord() {
         if (_uiState.value.roundList.isEmpty()) { return }
@@ -46,10 +45,13 @@ class HangmanViewModel(
         val randomIndex = (0 until _uiState.value.roundList.size).random()
         val selectedRound = _uiState.value.roundList[randomIndex]
     
-        _uiState.update { 
-            HangmanUiState(
-                roundList = it.roundList,
-                currentRound = selectedRound
+        _uiState.update {
+            _uiState.value.copy(
+                currentRound = selectedRound,
+                wordToDiscover = listOf(),
+                pointsToWin = 10L,
+                userHasLost = false,
+                userHasWon = false
             )
         }
         _keyboardUiState.update {
@@ -68,6 +70,7 @@ class HangmanViewModel(
                 }
             }
         }
+        Log.e("hangman uiState", _uiState.value.toString())
     }
 
     private fun checkWinCondition() {
@@ -133,5 +136,17 @@ class HangmanViewModel(
         return false
     }
 
+    fun resetUiState() {
+        _uiState.update {
+            _uiState.value.copy(
+                wordToDiscover = listOf(),
+                roundList = listOf(),
+                pointsToWin = 10L,
+                userHasWon = false,
+                currentRound = null,
+                userHasLost = false
+            )
+        }
+    }
 }
 

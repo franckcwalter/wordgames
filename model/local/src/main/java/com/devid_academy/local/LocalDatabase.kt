@@ -17,7 +17,7 @@ import com.devid_academy.local.user.UserLocal
     RoundLocal::class,
     UserLocal::class,
     UserRoundLocal::class,
-], version = 17)
+], version = 19)
 @TypeConverters(Converters::class)
 abstract class LocalDatabase : RoomDatabase() {
     abstract fun gameDataDao(): GameDataDao

@@ -1,7 +1,8 @@
 package com.devid_academy.common.game_base
 
-import com.devid_academy.gamedata.LevelEnum
-import com.devid_academy.gamedata.ModeEnum
+import com.devid_academy.ui.LevelEnum
+import com.devid_academy.ui.ModeEnum
+
 
 data class GameBaseUiState(
 

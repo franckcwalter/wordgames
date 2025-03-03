@@ -17,8 +17,9 @@ class HomeViewModel : ViewModel() {
     fun observeUiState(): StateFlow<HomeUiState> = uiState.asStateFlow()
 
     init {
-        val userId : UUID = SharedPrefsManager[USER_ID]
-        Log.e("HomeViewModel","userId : ${userId}" )
+        val userId: UUID? = SharedPrefsManager.get<String>(USER_ID, null)
+            .let { runCatching { UUID.fromString(it) }.getOrNull() }
+        Log.e("HomeViewModel","userId : $userId" )
     }
     fun getGameList() {
         // TODO : getGameList with title + image + description

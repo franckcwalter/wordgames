@@ -5,13 +5,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devid_academy.gamedata.GameRepository
-import com.devid_academy.gamedata.LevelEnum
+import com.devid_academy.ui.LevelEnum
 import com.devid_academy.ui.composables.KeyboardUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 
 class MotusViewModel (
@@ -25,40 +24,45 @@ class MotusViewModel (
     private val _keyboardUiState = MutableStateFlow(KeyboardUiState())
     fun observeKeyboardUiState(): StateFlow<KeyboardUiState> = _keyboardUiState
 
-    fun getGameData(){
+    fun getGameData(level: LevelEnum? = null){
         viewModelScope.launch {
-            val response = gameRepository.getRoundsByGameAndLevel("motus", LevelEnum.EASY.toString())
+            val response  = gameRepository.getGameDataByGameAndLevel("motus", level)
             Log.d("MotusViewModel getGameData", "Fetched response: $response")
 
             _uiState.update { currentState ->
-                currentState.copy(wordList = response)
+                currentState.copy(
+                    wordList = response.rounds,
+                    level = response.level
+                )
             }
-
             Log.d("MotusViewModel getGameData", "Updated state: ${_uiState.value}")
         }
     }
 
     fun setGridAndSetWord() {
         Log.e("MotusViewModel", "setGridAndSetWord()")
-        
-        // Préparer la grille
-        val tempGrid = mutableListOf<MutableList<MotusLetter>>()
-        for (i in 0 until 6) {
-            val row = mutableListOf<MotusLetter>()
-            for (j in 0 until 6) {
-                row.add(MotusLetter(' '))
-            }
-            tempGrid.add(row)
-        }
     
         // Préparer le mot à découvrir et le round
         var newWordToDiscover = listOf<MotusLetter>()
         var newCurrentRound = _uiState.value.currentRound
-        
+    
         if (_uiState.value.wordList.isNotEmpty()) {
             val round = _uiState.value.wordList[(Math.random() * _uiState.value.wordList.size).toInt()]
             newWordToDiscover = round.data[0].map { MotusLetter(it.uppercaseChar()) }
             newCurrentRound = round
+        }
+    
+        // Déterminer la longueur du mot
+        val wordLength = newWordToDiscover.size
+
+        // Préparer la grille
+        val tempGrid = mutableListOf<MutableList<MotusLetter>>()
+        for (i in 0 until 6) {  // Nombre de lignes fixe, mais pourrait être dynamique aussi
+            val row = mutableListOf<MotusLetter>()
+            for (j in 0 until wordLength) {
+                row.add(MotusLetter(' '))
+            }
+            tempGrid.add(row)
         }
     
         // Mise à jour unique de l'état
@@ -66,16 +70,16 @@ class MotusViewModel (
             it.copy(
                 grid = tempGrid,
                 currentRow = 0,
-                maxRows = 6,
+                maxRows = 6,  // Peut être ajusté si nécessaire
                 currentMotusLetter = 0,
-                maxMotusLetter = 6,
+                maxMotusLetter = wordLength,
                 wordToDiscover = newWordToDiscover,
                 currentRound = newCurrentRound,
                 pointsToWin = 10,
                 userHasWon = false
             )
         }
-        
+    
         // Reset du clavier
         _keyboardUiState.value = KeyboardUiState()
     }
@@ -263,3 +267,4 @@ class MotusViewModel (
         _keyboardUiState.value = KeyboardUiState()
     }
 }
+
