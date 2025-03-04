@@ -12,5 +12,15 @@ interface UserService {
         @Body guestUser: CreateUserGuestDto
     ): Response<User>
 
+    @POST("/users/register")
+    suspend fun signupUser(
+        @Body signupDto: SignupDto
+    ): Response<AuthResponse>
+
+    @POST("/users/login")
+    suspend fun loginUser(
+        @Body loginDto: LoginDto
+    ): Response<AuthResponse>
+
 }
 

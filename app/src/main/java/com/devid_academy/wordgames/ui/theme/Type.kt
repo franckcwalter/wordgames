@@ -10,7 +10,7 @@ import com.devid_academy.wordgames.R
 
 
 val customFont = FontFamily(
-    Font(com.devid_academy.core.ui.R.font.friendlyscribbles) // Replace with your font file name
+    Font(com.devid_academy.core.ui.R.font.friendlyscribbles)
 )
 
 val Typography = Typography(

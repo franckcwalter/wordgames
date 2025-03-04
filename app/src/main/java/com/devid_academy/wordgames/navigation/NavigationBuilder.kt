@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.devid_academy.common.auth.login.LoginScreen
+import com.devid_academy.common.auth.singup.SignupScreen
 import com.devid_academy.common.home.HomeScreen
 import com.devid_academy.common.splash.SplashScreen
 import com.devid_academy.hangman.HangmanScreen
@@ -62,5 +64,31 @@ object NavigationBuilder {
             MotusScreen(navController, innerPadding)
         }
     }
+
+    fun NavGraphBuilder.setLoginScreen(
+        navController: NavHostController,
+        innerPadding: PaddingValues = PaddingValues(),
+        animationDuration: Int = 700
+    ) {
+        composable(
+            route = Route.LoginScreen.name
+        ){
+            LoginScreen(navController)
+        }
+    }
+
+    fun NavGraphBuilder.setSignupScreen(
+        navController: NavHostController,
+        innerPadding: PaddingValues = PaddingValues(),
+        animationDuration: Int = 700
+    ) {
+        composable(
+            route = Route.SignupScreen.name
+        ){
+            SignupScreen(navController)
+        }
+    }
+
+
 
 }

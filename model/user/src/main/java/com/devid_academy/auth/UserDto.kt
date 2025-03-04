@@ -10,3 +10,20 @@ data class CreateUserGuestDto (
     @SerializedName("creation_datetime")
     val creationDateTime: LocalDateTime
 )
+
+data class SignupDto(
+    var id: UUID?,
+    val username: String,
+    val email: String,
+    val password: String
+)
+
+data class LoginDto(
+    val email: String,
+    val password: String
+)
+
+data class AuthResponse(
+    val user: User,
+    val accessToken: String
+)

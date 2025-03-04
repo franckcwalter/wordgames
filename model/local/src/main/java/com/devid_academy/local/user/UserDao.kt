@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import java.util.UUID
 
 @Dao
 interface UserDao {
@@ -12,6 +13,9 @@ interface UserDao {
     suspend fun insertGuestUser(guestUser: UserLocal): Long
 
     @Query("SELECT COUNT(*) FROM user")
-    suspend fun getGuestUser(): Long
+    suspend fun getGuestUserCount(): Long
+
+    @Query("SELECT id FROM user LIMIT 1")
+    suspend fun getGuestUserId(): UUID
 
 }

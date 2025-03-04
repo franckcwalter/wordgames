@@ -23,6 +23,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Login
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -86,10 +88,13 @@ fun HomeScreen(
             }
         },
         onProfile = {
-            // navController.navigate(Route.Profile.name)
+            // navController.navigate(Route.ProfileScreen.name)
         },
         onStats = {
-            // navController.navigate(Route.Stats.name)
+            // navController.navigate(Route.StatsScreen.name)
+        },
+        onLogin = {
+            navController.navigate(Route.LoginScreen.name)
         }
     )
 
@@ -117,10 +122,10 @@ fun HomeContent(
     onGameCard: (String) -> Unit,
     onStartGame: () -> Unit,
     onProfile: () -> Unit,
-    onStats: () -> Unit
+    onStats: () -> Unit,
+    onLogin: () -> Unit
 ){
 
-    val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxWidth()){
 
@@ -132,6 +137,14 @@ fun HomeContent(
         ){
             Spacer(Modifier.height(48.dp))
             Box (Modifier.fillMaxWidth()){
+
+                SquareIconButton(
+                    imageVector = Icons.AutoMirrored.Rounded.Login,
+                    onClick = onLogin,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                        .padding(end = 12.dp)
+                )
+
                 Image(painter = painterResource(id = R.drawable.logo),
                     contentDescription = stringResource(R.string.image_content_desc_logo),
                     modifier = Modifier
@@ -143,10 +156,12 @@ fun HomeContent(
                 SquareIconButton(
                     imageVector = Icons.Rounded.Public,
                     modifier = Modifier
-                        .padding(end = 12.dp)
-                        .align(Alignment.CenterEnd)){
+                        .padding(start = 12.dp)
+                        .align(Alignment.CenterStart)){
                     onOfflineOnline()
                 }
+
+
             }
 
             Spacer(Modifier.height(24.dp))
@@ -278,7 +293,6 @@ data class GameInfo(
     @DrawableRes val imageRes: Int
 )
 
-
 @Preview
 @Composable
 private fun HomeContentPreview() {
@@ -288,7 +302,8 @@ private fun HomeContentPreview() {
         onStats = {},
         onStartGame = {},
         onGameCard = {},
-        onOfflineOnline = {}
+        onOfflineOnline = {},
+        onLogin = {}
     )
 }
 

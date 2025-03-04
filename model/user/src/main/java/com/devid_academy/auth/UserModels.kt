@@ -10,7 +10,6 @@ data class User(
     val id: UUID,
     val username: String?,
     val email: String?,
-    val password: String?,
     @SerializedName("creation_datetime")
     val creationDatetime: LocalDateTime,
     @SerializedName("registration_datetime")
