@@ -14,7 +14,7 @@ val modulePresentationCommon = module {
     viewModel { HomeViewModel() }
     viewModel { GameBaseViewModel(get()) }
 
-    viewModel { LoginViewModel(get()) }
-    viewModel { SignupViewModel(get()) }
+    viewModel { LoginViewModel(get(),get()) }
+    viewModel { SignupViewModel(get(), get()) }
 
 }

@@ -1,29 +1,41 @@
 package com.devid_academy.common.auth.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devid_academy.auth.LoginDto
 import com.devid_academy.auth.UserRepository
+import com.devid_academy.common.R
+import com.devid_academy.distant.ApiResult
+import com.devid_academy.ui.GlobalMessageRepository
 import kotlinx.coroutines.launch
 
 
 class LoginViewModel(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val globalMessageRepository : GlobalMessageRepository
 ): ViewModel() {
 
-    //private val uiState = MutableStateFlow(LoginUiState())
-    // fun observeUiState(): StateFlow<LoginUiState> = uiState.asStateFlow()
 
     fun login(loginDto: LoginDto) {
-
         viewModelScope.launch {
-            val response = userRepository.login(loginDto)
+            when(val response = userRepository.login(loginDto)) {
+                is ApiResult.Success -> {
+                    globalMessageRepository.userMessageStringRes.tryEmit(
+                        R.string.user_message_user_logged_in
+                    )
 
-            Log.e("login", response.toString())
+                }
+                is ApiResult.Error -> {
+                    if (response.httpCode == 401)
+                        globalMessageRepository.userMessageStringRes.tryEmit(
+                            R.string.user_message_wrong_email_or_password
+                        )
+                    else
+                        globalMessageRepository.userMessageString.tryEmit(
+                            "${response.httpCode} : ${response.exception}"
+                        )
+                }
+            }
         }
     }
-
-
-
 }

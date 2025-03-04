@@ -58,4 +58,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     debugImplementation(libs.androidx.compose.ui.ui.tooling)
 
+    // Koin
+    implementation(libs.koin.core)
+    implementation(libs.koin.androidx.compose)
+
 }

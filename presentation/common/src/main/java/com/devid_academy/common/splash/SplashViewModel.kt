@@ -69,7 +69,7 @@ class SplashViewModel (
             val result = gameRepository.fetchGamesWithData()
             if (result is ApiResult.Error) {
                 onFetchComplete(
-                    result.code.toString() + " " +
+                    result.httpCode.toString() + " " +
                     result.exception.message + " " +
                     result.exception.cause.toString())
             } else {

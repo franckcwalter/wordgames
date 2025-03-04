@@ -3,4 +3,10 @@
     <string name="image_content_desc_logo">logo</string>
     <string name="image_content_desc_offline_online_button">Bouton En linge/ Hors Ligne</string>
     <string name="image_content_desc_game_logo">"logo du jeu %1$s "</string>
+    <string name="une_erreur_est_survenue">error</string>
+    <string name="user_message_user_logged_in">Vous avez été connecté(e) ! :)</string>
+    <string name="user_message_wrong_email_or_password">Mauvais email ou mot de passe :(</string>
+    <string name="user_message_user_signed_in">Vous avez été inscrit(e) ! :)</string>
+    <string name="user_message_email_already_used">Cet email a déjà un compte :(</string>
+    <string name="user_message_username_already_used">Ce pseudo est déjà utilisé :(</string>
 </resources>
