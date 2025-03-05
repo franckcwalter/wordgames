@@ -15,5 +15,9 @@ interface GameDataService {
         @Body finishedRounds: List<UserRound>
     ): Response<Unit>
 
+    @POST("game-analytics")
+    suspend fun postGameAnalytics(
+        @Body gameAnalytics: Map<String, @JvmSuppressWildcards Any>
+    ): Response<AnalyticsResponse>
 }
 

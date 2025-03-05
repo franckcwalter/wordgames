@@ -4,9 +4,13 @@ import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devid_academy.distant.ApiResult
 import com.devid_academy.gamedata.GameRepository
+import com.devid_academy.ui.GlobalMessageRepository
 import com.devid_academy.ui.LevelEnum
 import com.devid_academy.ui.composables.KeyboardUiState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -14,7 +18,8 @@ import kotlinx.coroutines.launch
 
 
 class MotusViewModel (
-    private val gameRepository: GameRepository
+    private val gameRepository: GameRepository,
+    private val globalMessageRepository: GlobalMessageRepository
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(MotusUiState())
@@ -29,6 +34,8 @@ class MotusViewModel (
             val response  = gameRepository.getGameDataByGameAndLevel("motus", level)
             Log.d("MotusViewModel getGameData", "Fetched response: $response")
 
+            gameRepository.addData("userChoseDifficulty", level ?: "EASY")
+
             _uiState.update { currentState ->
                 currentState.copy(
                     wordList = response.rounds,
@@ -41,7 +48,9 @@ class MotusViewModel (
 
     fun setGridAndSetWord() {
         Log.e("MotusViewModel", "setGridAndSetWord()")
-    
+
+        gameRepository.incrementMetric("roundPlayed")
+
         // Préparer le mot à découvrir et le round
         var newWordToDiscover = listOf<MotusLetter>()
         var newCurrentRound = _uiState.value.currentRound
@@ -116,13 +125,18 @@ class MotusViewModel (
             (_uiState.value.currentRow == _uiState.value.maxRows || _uiState.value.pointsToWin <= 0)) {
             _uiState.update {
                 it.copy(userHasLost = true)
+
             }
             // TODO: inform user they have lost 
             setGridAndSetWord()
+            gameRepository.incrementMetric("userHasLost")
         }
     }
 
     fun checkWord(): Boolean {
+
+        gameRepository.incrementMetric("checkWordButtonClick")
+
         val grid = _uiState.value.grid
         val wordToDiscover = _uiState.value.wordToDiscover.toMutableList()
 
@@ -185,6 +199,10 @@ class MotusViewModel (
 
         if(!userHasWon)
             updatePointsToWin()
+        else {
+            gameRepository.incrementMetric("userHasWon")
+            gameRepository.addData("amoutOfPointsUserWon", _uiState.value.pointsToWin)
+        }
 
         _uiState.update {
             _uiState.value.copy(
@@ -192,7 +210,8 @@ class MotusViewModel (
             )
         }
 
-        checkLoseCondition()  
+        checkLoseCondition()
+
 
         return userHasWon
     }
@@ -247,6 +266,7 @@ class MotusViewModel (
             grid = currentGrid,
             currentMotusLetter = 0
         )
+        gameRepository.incrementMetric("resetRowButtonClick")
     }
 
     fun resetUiState() {
@@ -266,5 +286,34 @@ class MotusViewModel (
         }
         _keyboardUiState.value = KeyboardUiState()
     }
+
+    /*** Session analytics  ***/
+
+    fun startGameSession(gameName: String) {
+        Log.e("Motus", "startGameSession()")
+        gameRepository.startGameSession(gameName)
+    }
+
+    fun endGameSession() {
+        Log.e("motus", "endGameSession()")
+        CoroutineScope(Dispatchers.IO).launch {
+            when (val response = gameRepository.postGameAnalytics()) {
+                is ApiResult.Success -> {
+                    globalMessageRepository.userMessageString.tryEmit(
+                        "id analytics ${response.data}"
+                    )
+                }
+                is ApiResult.Error -> {
+                    globalMessageRepository.userMessageString.tryEmit(
+                        "erreur insertion analytics"
+                    )
+                }
+            }
+        }
+    }
+
+
+    /*** End Session analytics  ***/
+
 }
 

@@ -15,6 +15,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 interface GameRepository {
+
     suspend fun fetchGamesWithData(): ApiResult<List<Game>>
     suspend fun insertGamesWithDataIntoLocalDb(gamesWithData: List<Game>)
     suspend fun getGameDataByGameAndLevel(gameName: String, level: LevelEnum?): GameData
@@ -22,6 +23,12 @@ interface GameRepository {
     suspend fun postRoundsFinished(): ApiResult<Unit>
     suspend fun getTotalPoints(): Long
     suspend fun getLevelByGameName(gameName: String): LevelEnum
+
+    fun startGameSession(gameName: String)
+    fun addData(key: String, value: Any)
+    fun incrementMetric(name: String, amount: Int = 1)
+    suspend fun postGameAnalytics(): ApiResult<AnalyticsResponse>
+
 }
 
 class GameRepositoryImpl(
@@ -29,6 +36,7 @@ class GameRepositoryImpl(
     private val localdb: LocalDatabase
 ) : GameRepository {
 
+    private val sessionAnalytics = SessionAnalytics()
 
     override suspend fun fetchGamesWithData(): ApiResult<List<Game>> {
         return try {
@@ -135,6 +143,41 @@ class GameRepositoryImpl(
         }
     }
 
+    /*** Session analytics  ***/
+
+    override fun startGameSession(gameName: String) {
+        sessionAnalytics.startSession(gameName)
+    }
+
+    override fun incrementMetric(name: String, amount: Int) {
+        sessionAnalytics.incrementMetric(name, amount)
+    }
+
+    override fun addData(key: String, value: Any){
+        sessionAnalytics.addData(key, value)
+    }
+
+    override suspend fun postGameAnalytics(): ApiResult<AnalyticsResponse> {
+        return try {
+            val response = handleApi { apiService.postGameAnalytics(sessionAnalytics.getSessionData()) }
+            Log.e("GameDataRepositoryImpl","postGameAnalytics() response : $response")
+
+            if (response is ApiResult.Success) {
+                sessionAnalytics.reset()
+            }
+            response
+        } catch (e: HttpException) {
+            ApiResult.Error(e, e.code())
+        } catch (e: Throwable) {
+            ApiResult.Error(e)
+        }
+    }
+
+
+    /*** End Session analytics  ***/
+
+
+
 
     /***** PRIVATE METHODS *****/
 
@@ -208,3 +251,7 @@ fun String.toLevelEnum(default: LevelEnum = LevelEnum.EASY): LevelEnum {
     }
 }
 
+
+data class AnalyticsResponse(
+    val id: String
+)

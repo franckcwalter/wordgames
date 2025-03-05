@@ -50,18 +50,23 @@ fun MotusScreen(
     val uiState by viewModel.observeMotusUiState().collectAsState()
     val keyboardUiState by viewModel.observeKeyboardUiState().collectAsState()
 
-    Log.d("MotusScreen uiState ", uiState.toString())
 
-    LaunchedEffect(Unit) {
-        viewModel.getGameData()
+    LaunchedEffect(navController.currentBackStackEntry) {
+        navController.currentBackStackEntry?.destination?.route?.let { Log.e("motus", it) }
+
+        if (navController.currentBackStackEntry?.destination?.route == "motus"){
+            viewModel.getGameData()
+            viewModel.startGameSession("motus")
+        }
     }
 
     GameBase(
         gameName = "motus",
         onClue = {},
         onQuitGame = {
-            navController.popBackStack()
+            viewModel.endGameSession()
             viewModel.resetUiState()
+            navController.popBackStack()
         },
         onUpdateLevel = { level ->
             viewModel.getGameData(level)
