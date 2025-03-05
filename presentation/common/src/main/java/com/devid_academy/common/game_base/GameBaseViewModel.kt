@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devid_academy.auth.UserRepository
+import com.devid_academy.distant.ApiResult
 import com.devid_academy.gamedata.GameRepository
+import com.devid_academy.ui.GlobalMessageRepository
 import com.devid_academy.ui.LevelEnum
 import com.devid_academy.ui.ModeEnum
 import com.devid_academy.ui.SharedPrefsManager
@@ -16,7 +18,8 @@ import kotlinx.coroutines.launch
 
 class GameBaseViewModel(
     private val gameRepository: GameRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val globalMessageRepository: GlobalMessageRepository
 ): ViewModel() {
 
     private val uiState = MutableStateFlow(GameBaseUiState())
@@ -158,12 +161,25 @@ class GameBaseViewModel(
         // TODO("Not yet implemented")
     }
 
-    fun postRoundsFinished(){
+    fun postRoundsFinished() {
         userRepository.getAccessToken()?.let {
             viewModelScope.launch {
-                gameRepository.postRoundsFinished()
-            }
-        }
-    }
+                when (val response = gameRepository.postRoundsFinished()) {
+                    is ApiResult.Error -> {
+                        globalMessageRepository.userMessageString.tryEmit(
+                            "${response.httpCode} ${response.exception}"
+                        )
+                    }
 
+                    is ApiResult.Success -> {
+                        globalMessageRepository.userMessageString.tryEmit(
+                            "Rounds finished insérées en bdd distante"
+                        )
+                    }
+                }
+            }
+        } ?: globalMessageRepository.userMessageString.tryEmit(
+            "non connecté"
+            )
+    }
 }

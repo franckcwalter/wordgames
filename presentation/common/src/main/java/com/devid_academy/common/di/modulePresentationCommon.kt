@@ -12,7 +12,7 @@ val modulePresentationCommon = module {
 
     viewModel { SplashViewModel(get(), get()) }
     viewModel { HomeViewModel() }
-    viewModel { GameBaseViewModel(get(), get()) }
+    viewModel { GameBaseViewModel(get(), get(), get()) }
 
     viewModel { LoginViewModel(get(),get()) }
     viewModel { SignupViewModel(get(), get()) }
