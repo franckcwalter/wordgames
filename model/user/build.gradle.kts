@@ -43,7 +43,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(projects.model.local)
-    implementation(projects.model.distant)
+    //implementation(projects.model.distant)
 
 
 

@@ -1,11 +1,12 @@
 package com.devid_academy.common.auth.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devid_academy.auth.LoginDto
 import com.devid_academy.auth.UserRepository
 import com.devid_academy.common.R
-import com.devid_academy.distant.ApiResult
+import com.devid_academy.auth.ApiResult
 import com.devid_academy.ui.GlobalMessageRepository
 import kotlinx.coroutines.launch
 
@@ -30,10 +31,12 @@ class LoginViewModel(
                         globalMessageRepository.userMessageStringRes.tryEmit(
                             R.string.user_message_wrong_email_or_password
                         )
-                    else
+                    else {
                         globalMessageRepository.userMessageString.tryEmit(
                             "${response.httpCode} : ${response.exception}"
                         )
+                        Log.e("login", response.toString())
+                    }
                 }
             }
         }

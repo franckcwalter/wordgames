@@ -3,6 +3,7 @@ package com.devid_academy.common.game_base
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devid_academy.auth.UserRepository
 import com.devid_academy.gamedata.GameRepository
 import com.devid_academy.ui.LevelEnum
 import com.devid_academy.ui.ModeEnum
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GameBaseViewModel(
-    private val gameRepository: GameRepository
+    private val gameRepository: GameRepository,
+    private val userRepository: UserRepository
 ): ViewModel() {
 
     private val uiState = MutableStateFlow(GameBaseUiState())
@@ -157,8 +159,10 @@ class GameBaseViewModel(
     }
 
     fun postRoundsFinished(){
-        viewModelScope.launch {
-            gameRepository.postRoundsFinished()
+        userRepository.getAccessToken()?.let {
+            viewModelScope.launch {
+                gameRepository.postRoundsFinished()
+            }
         }
     }
 

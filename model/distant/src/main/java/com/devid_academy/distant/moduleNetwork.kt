@@ -1,5 +1,6 @@
 package com.devid_academy.distant
 
+import android.media.session.MediaSession.Token
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.GsonBuilder
@@ -14,10 +15,20 @@ import java.util.concurrent.TimeUnit
 @RequiresApi(Build.VERSION_CODES.O)
 val moduleNetwork = module {
 
+   //  single<AuthInterceptor> { AuthInterceptor(get()) }
+
+    single<AuthInterceptor> {
+        AuthInterceptor(
+            userRepository = lazy { get() }
+        )
+    }
+
     single { HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY } }
 
     single {
         OkHttpClient.Builder().apply {
+            // addInterceptor(get<AuthInterceptor>())
+            addInterceptor(get<AuthInterceptor>())
             addInterceptor(get<HttpLoggingInterceptor>())
             callTimeout(10, TimeUnit.SECONDS)
         }.build()

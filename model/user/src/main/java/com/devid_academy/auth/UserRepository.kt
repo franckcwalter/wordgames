@@ -1,10 +1,8 @@
 package com.devid_academy.auth
 
 import android.util.Log
-import com.devid_academy.distant.ApiResult
-import com.devid_academy.distant.handleApi
-import com.devid_academy.local.user.UserLocal
 import com.devid_academy.local.LocalDatabase
+import com.devid_academy.local.user.UserLocal
 import retrofit2.HttpException
 
 interface UserRepository {
@@ -13,12 +11,29 @@ interface UserRepository {
     suspend fun createGuestUserRemote(guestUser: CreateUserGuestDto): ApiResult<User>
     suspend fun signup(signupDto: SignupDto): ApiResult<AuthResponse>
     suspend fun login(loginDto: LoginDto): ApiResult<AuthResponse>
+
+    fun getAccessToken(): String?
+    fun setAccessToken(token: String)
 }
 
 class UserRepositoryImpl(
     private val apiService: UserService,
     private val localdb: LocalDatabase
 ) : UserRepository {
+
+
+    @Volatile
+    private var accessToken: String? = null // Stockage en mémoire
+
+    override fun getAccessToken(): String? {
+        return accessToken
+    }
+
+    override fun setAccessToken(token: String) {
+        accessToken = token
+    }
+
+
 
     override suspend fun checkIfUserExistsLocal(): Boolean {
         return localdb.userDao().getGuestUserCount() > 0L
@@ -56,7 +71,7 @@ class UserRepositoryImpl(
             Log.e("Signup","apiService.signupUser response : $response")
 
             if (response is ApiResult.Success) {
-
+                setAccessToken(response.data.accessToken)
             }
             response
         } catch (e: HttpException) {
@@ -77,7 +92,7 @@ class UserRepositoryImpl(
             Log.e("login","apiService.signupUser response : $response")
 
             if (response is ApiResult.Success) {
-
+                setAccessToken(response.data.accessToken)
             }
             response
         } catch (e: HttpException) {

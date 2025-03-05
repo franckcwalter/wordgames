@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devid_academy.auth.CreateUserGuestDto
 import com.devid_academy.auth.UserRepository
-import com.devid_academy.distant.ApiResult
+import com.devid_academy.auth.ApiResult
 import com.devid_academy.gamedata.GameRepository
 import com.devid_academy.local.RoleEnum
 import com.devid_academy.local.user.UserLocal
@@ -67,10 +67,11 @@ class SplashViewModel (
     fun getGameData(onFetchComplete: (String?) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = gameRepository.fetchGamesWithData()
-            if (result is ApiResult.Error) {
+            if (result is com.devid_academy.distant.ApiResult.Error) {
+
                 onFetchComplete(
-                    result.httpCode.toString() + " " +
-                    result.exception.message + " " +
+                    result.errorCode.toString() + " " +
+                    result.errorMessage + " " +
                     result.exception.cause.toString())
             } else {
                 onFetchComplete(

@@ -23,11 +23,12 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 modulePresentationCommon,
+                moduleModelUser,
                 moduleNetwork,
                 moduleModelLocalDB,
 
                 moduleModelGamedata,
-                moduleModelUser,
+                // moduleModelUser,
 
                 moduleUiMotus,
                 moduleUiHangman,
