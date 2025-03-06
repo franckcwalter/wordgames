@@ -30,5 +30,6 @@ data class HomeUiState (
         )
     ),
     val selectedGameId: String = "",
-    val isDisplayingQuitApp: Boolean = false
+    val isDisplayingQuitApp: Boolean = false,
+    val userIsConnected: Boolean = false
 )

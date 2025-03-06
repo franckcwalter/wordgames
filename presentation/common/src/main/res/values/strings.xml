@@ -9,4 +9,7 @@
     <string name="user_message_user_signed_in">Vous avez été inscrit(e) ! :)</string>
     <string name="user_message_email_already_used">Cet email a déjà un compte :(</string>
     <string name="user_message_username_already_used">Ce pseudo est déjà utilisé :(</string>
+    <string name="user_message_auth_to_see_scores">Connectez-vous pour accéder au tableau des scores!</string>
+    <string name="profile_button_label_logout">Se déconnecter</string>
+    <string name="user_message_user_logged_out">Vous avez été déconnecté(e)...</string>
 </resources>

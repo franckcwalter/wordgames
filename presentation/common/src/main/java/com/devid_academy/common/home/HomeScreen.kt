@@ -24,7 +24,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.FactCheck
 import androidx.compose.material.icons.automirrored.rounded.Login
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -65,6 +67,7 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getGameList()
+        viewModel.validateToken()
     }
 
     BackHandler(onBack = { viewModel.toggleQuitAppModal() })
@@ -88,10 +91,15 @@ fun HomeScreen(
             }
         },
         onProfile = {
-            // navController.navigate(Route.ProfileScreen.name)
+            navController.navigate(Route.ProfileScreen.name)
         },
         onStats = {
-             navController.navigate(Route.LeaderboardScreen.name)
+            if (homeUiState.value.userIsConnected)
+                navController.navigate(Route.LeaderboardScreen.name)
+            else {
+                navController.navigate(Route.LoginScreen.name)
+                viewModel.sendUserMessage(R.string.user_message_auth_to_see_scores)
+            }
         },
         onLogin = {
             navController.navigate(Route.LoginScreen.name)
@@ -139,10 +147,13 @@ fun HomeContent(
             Box (Modifier.fillMaxWidth()){
 
                 SquareIconButton(
-                    imageVector = Icons.AutoMirrored.Rounded.Login,
-                    onClick = onLogin,
+                    imageVector = if(homeUiState.userIsConnected) Icons.Rounded.Check else Icons.AutoMirrored.Rounded.Login,
+                    onClick = {
+                       // if (!homeUiState.userIsConnected)
+                            onLogin() },
                     modifier = Modifier.align(Alignment.CenterEnd)
-                        .padding(end = 12.dp)
+                        .padding(end = 12.dp),
+                    containerColor = if (homeUiState.userIsConnected) Color.Green else Color.White
                 )
 
                 Image(painter = painterResource(id = R.drawable.logo),

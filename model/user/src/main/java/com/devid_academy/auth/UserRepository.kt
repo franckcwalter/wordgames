@@ -19,6 +19,8 @@ interface UserRepository {
     fun getAccessToken(): String?
     fun setAccessToken(token: String)
     suspend fun refreshToken(): ApiResult<AuthResponse>
+    suspend fun validateToken(refreshToken: String): ApiResult<Boolean>
+    suspend fun logout(): ApiResult<Unit>
 }
 
 class UserRepositoryImpl(
@@ -29,16 +31,14 @@ class UserRepositoryImpl(
     private val refreshTokenMutex = Mutex()
 
     @Volatile
-    private var accessToken: String? = null // Stockage en mémoire
+    private var accessToken: String? = null
 
     override fun getAccessToken(): String? {
         return accessToken
     }
-
     override fun setAccessToken(token: String) {
         accessToken = token
     }
-
 
 
     override suspend fun checkIfUserExistsLocal(): Boolean {
@@ -123,6 +123,37 @@ class UserRepositoryImpl(
             } catch (e: Exception) {
                 ApiResult.Error(e)
             }
+        }
+    }
+
+    override suspend fun validateToken(refreshToken: String): ApiResult<Boolean> {
+        return try {
+            val response = handleApi { apiService.validateToken(refreshToken) }
+            Log.e("validateToken","validateToken : $response")
+
+            response
+        } catch (e: HttpException) {
+            ApiResult.Error(e, e.code())
+        } catch (e: Throwable) {
+            ApiResult.Error(e)
+        }
+    }
+
+    override suspend fun logout(): ApiResult<Unit> {
+        val refreshToken: String = SharedPrefsManager[REFRESH_TOKEN]  // Get token first
+        
+        // Clear tokens
+        setAccessToken("")  // or null
+        SharedPrefsManager[REFRESH_TOKEN] = null
+    
+        return try {
+            val response = handleApi { apiService.logout(refreshToken) }  // Use the saved token
+            Log.e("validateToken","validateToken : $response")
+            response
+        } catch (e: HttpException) {
+            ApiResult.Error(e, e.code())
+        } catch (e: Throwable) {
+            ApiResult.Error(e)
         }
     }
 

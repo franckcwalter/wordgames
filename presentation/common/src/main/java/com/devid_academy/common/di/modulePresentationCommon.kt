@@ -5,6 +5,7 @@ import com.devid_academy.common.auth.singup.SignupViewModel
 import com.devid_academy.common.game_base.GameBaseViewModel
 import com.devid_academy.common.home.HomeViewModel
 import com.devid_academy.common.leaderboard.LeaderboardViewModel
+import com.devid_academy.common.profile.ProfileViewModel
 import com.devid_academy.common.splash.SplashViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -12,12 +13,13 @@ import org.koin.dsl.module
 val modulePresentationCommon = module {
 
     viewModel { SplashViewModel(get(), get()) }
-    viewModel { HomeViewModel() }
+    viewModel { HomeViewModel(get(), get()) }
     viewModel { GameBaseViewModel(get(), get(), get()) }
 
     viewModel { LoginViewModel(get(),get()) }
     viewModel { SignupViewModel(get(), get()) }
 
     viewModel { LeaderboardViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get(), get()) }
 
 }

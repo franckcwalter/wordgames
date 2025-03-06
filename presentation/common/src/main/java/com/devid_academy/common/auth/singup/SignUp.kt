@@ -14,7 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -46,10 +48,21 @@ import org.koin.androidx.compose.getViewModel
 fun SignupScreen(
     navController: NavHostController
 ) {
-
     val viewModel = getViewModel<SignupViewModel>()
-    // val signupUiState = viewModel.observeUiState().collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is SignupUiState.Success -> {
+                navController.navigate(Route.HomeScreen.name) {
+                    popUpTo(Route.HomeScreen.name) {
+                        inclusive = true
+                    }
+                }
+            }
+            else -> { /* no-op */ }
+        }
+    }
 
     SignupContent(
         onSignupClick = { signupDto ->
@@ -62,7 +75,6 @@ fun SignupScreen(
             navController.popBackStack(route = Route.HomeScreen.name, false)
         }
     )
-
 }
 
 @Composable

@@ -10,8 +10,10 @@ import com.devid_academy.gamedata.GameRepository
 import com.devid_academy.local.RoleEnum
 import com.devid_academy.local.user.UserLocal
 import com.devid_academy.ui.SharedPrefsManager
+import com.devid_academy.ui.SharedPrefsManager.REFRESH_TOKEN
 import com.devid_academy.ui.SharedPrefsManager.USER_ID
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.util.UUID
@@ -24,6 +26,7 @@ class SplashViewModel (
 
     init {
         createGuestUserIfNotExists()
+        refreshToken()
     }
 
     private fun createGuestUserIfNotExists() {
@@ -80,4 +83,25 @@ class SplashViewModel (
             }
         }
     }
+
+    private fun refreshToken() {
+        val refreshToken: String = SharedPrefsManager[REFRESH_TOKEN]
+        if (refreshToken.isBlank()) {
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val response = userRepository.refreshToken()
+
+                if (response is ApiResult.Success) {
+                    Log.e("HomeViewModel", "refreshing token")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error refreshing token", e)
+            }
+        }
+    }
+
+
 }

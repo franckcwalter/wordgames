@@ -1,9 +1,7 @@
 package com.devid_academy.common.auth.singup
 
-/*
-data class SignupUiState(
-    val email: String = "",
-    val password: String = "",
-    val cPassword: String = ""
-)
-*/
+sealed class SignupUiState {
+    data object Initial : SignupUiState()
+    data object Success : SignupUiState()
+    data class Error(val message: String) : SignupUiState()
+}

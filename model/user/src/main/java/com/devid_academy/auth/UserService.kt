@@ -27,4 +27,15 @@ interface UserService {
     suspend fun refreshToken(
         @Query("refresh_token") refreshToken: String
     ): Response<AuthResponse>
+
+    @POST("/users/validate-token")
+    suspend fun validateToken(
+        @Query("refresh_token") refreshToken: String
+    ): Response<Boolean>
+
+    @POST("/users/logout")
+    suspend fun logout(
+        @Query("refresh_token") refreshToken: String
+    ): Response<Unit>
+
 }
