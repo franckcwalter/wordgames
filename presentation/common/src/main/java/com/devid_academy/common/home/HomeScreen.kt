@@ -91,7 +91,7 @@ fun HomeScreen(
             // navController.navigate(Route.ProfileScreen.name)
         },
         onStats = {
-            // navController.navigate(Route.StatsScreen.name)
+             navController.navigate(Route.LeaderboardScreen.name)
         },
         onLogin = {
             navController.navigate(Route.LoginScreen.name)
@@ -199,7 +199,7 @@ fun HomeContent(
 
             Row() {
                 MediumButton(
-                    label = "Statistiques",
+                    label = "Scores",
                     containerColor = Color(0xFFfe6465)) {
                     onStats()
                 }

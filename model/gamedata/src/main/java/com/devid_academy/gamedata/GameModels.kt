@@ -39,3 +39,28 @@ data class UserRound(
     val dateTime: LocalDateTime,
     val points: Long
 )
+
+
+
+data class LeaderboardResponse(
+    @SerializedName("leaderboard") val leaderboard: Leaderboard,
+    @SerializedName("my_points") val myPoints: MyPoints
+)
+
+data class Leaderboard(
+    @SerializedName("today") val today: List<LeaderboardEntry>,
+    @SerializedName("this_week") val thisWeek: List<LeaderboardEntry>,
+    @SerializedName("all_time") val allTime: List<LeaderboardEntry>
+)
+
+data class LeaderboardEntry(
+    @SerializedName("user_id") val userId: String,
+    @SerializedName("username") val username: String,
+    @SerializedName("total_points") val totalPoints: Int
+)
+
+data class MyPoints(
+    @SerializedName("today") val today: Int,
+    @SerializedName("this_week") val thisWeek: Int,
+    @SerializedName("all_time") val allTime: Int
+)

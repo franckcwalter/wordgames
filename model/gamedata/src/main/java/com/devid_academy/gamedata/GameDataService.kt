@@ -19,5 +19,8 @@ interface GameDataService {
     suspend fun postGameAnalytics(
         @Body gameAnalytics: Map<String, @JvmSuppressWildcards Any>
     ): Response<AnalyticsResponse>
+
+    @GET("/leaderboard")
+    suspend fun getLeaderboard(): Response<LeaderboardResponse>
 }
 

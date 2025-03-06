@@ -29,6 +29,7 @@ interface GameRepository {
     fun incrementMetric(name: String, amount: Int = 1)
     suspend fun postGameAnalytics(): ApiResult<AnalyticsResponse>
 
+    suspend fun getLeaderboards(): ApiResult<LeaderboardResponse>
 }
 
 class GameRepositoryImpl(
@@ -131,6 +132,23 @@ class GameRepositoryImpl(
         return try {
             val response = handleApi { apiService.postFinishedRounds(allUserRounds) }
             Log.e("GameDataRepositoryImpl","postRoundsFinished() response : $response")
+
+            if (response is ApiResult.Success) {
+                // TODO: something ?
+            }
+            response
+        } catch (e: HttpException) {
+            ApiResult.Error(e, e.code())
+        } catch (e: Throwable) {
+            ApiResult.Error(e)
+        }
+    }
+
+
+    override suspend fun getLeaderboards(): ApiResult<LeaderboardResponse> {
+        return try {
+            val response = handleApi { apiService.getLeaderboard() }
+            Log.e("GameDataRepositoryImpl","getLeaderboards() response : $response")
 
             if (response is ApiResult.Success) {
                 // TODO: something ?

@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.devid_academy.ui.Route
 import com.devid_academy.wordgames.navigation.NavigationBuilder.setHangmanScreen
 import com.devid_academy.wordgames.navigation.NavigationBuilder.setHomeScreen
+import com.devid_academy.wordgames.navigation.NavigationBuilder.setLeaderboardScreen
 import com.devid_academy.wordgames.navigation.NavigationBuilder.setLoginScreen
 import com.devid_academy.wordgames.navigation.NavigationBuilder.setMotusScreen
 import com.devid_academy.wordgames.navigation.NavigationBuilder.setSignupScreen
@@ -28,5 +29,6 @@ fun WordgamesNavigation (
         setMotusScreen(navController, innerPadding)
         setLoginScreen(navController, innerPadding)
         setSignupScreen(navController, innerPadding)
+        setLeaderboardScreen(navController, innerPadding)
     }
 }

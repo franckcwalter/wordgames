@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.devid_academy.common.auth.login.LoginScreen
 import com.devid_academy.common.auth.singup.SignupScreen
 import com.devid_academy.common.home.HomeScreen
+import com.devid_academy.common.leaderboard.Leaderboard
 import com.devid_academy.common.splash.SplashScreen
 import com.devid_academy.hangman.HangmanScreen
 import com.devid_academy.motus.MotusScreen
@@ -89,6 +90,16 @@ object NavigationBuilder {
         }
     }
 
-
+    fun NavGraphBuilder.setLeaderboardScreen(
+        navController: NavHostController,
+        innerPadding: PaddingValues = PaddingValues(),
+        animationDuration: Int = 700
+    ) {
+        composable(
+            route = Route.LeaderboardScreen.name
+        ){
+            Leaderboard(navController)
+        }
+    }
 
 }

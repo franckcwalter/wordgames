@@ -7,4 +7,5 @@ sealed class Route(val name: String) {
     data object MotusScreen : Route("motus")
     data object LoginScreen : Route("login")
     data object SignupScreen : Route("singup")
+    data object LeaderboardScreen : Route("leaderboard")
 }
