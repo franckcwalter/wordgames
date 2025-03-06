@@ -4,6 +4,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface UserService {
 
@@ -22,5 +23,8 @@ interface UserService {
         @Body loginDto: LoginDto
     ): Response<AuthResponse>
 
+    @POST("/users/refresh-token")
+    suspend fun refreshToken(
+        @Query("refresh_token") refreshToken: String
+    ): Response<AuthResponse>
 }
-

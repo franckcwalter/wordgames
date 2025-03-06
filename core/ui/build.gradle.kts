@@ -62,4 +62,7 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.androidx.compose)
 
+    implementation(libs.androidx.security.crypto)
+
+
 }

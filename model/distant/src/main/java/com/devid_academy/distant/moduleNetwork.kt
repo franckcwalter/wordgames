@@ -1,5 +1,6 @@
 package com.devid_academy.distant
 
+import TokenRefreshInterceptor
 import android.media.session.MediaSession.Token
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -23,12 +24,18 @@ val moduleNetwork = module {
         )
     }
 
+    single<TokenRefreshInterceptor> {
+        TokenRefreshInterceptor(
+            userRepository = lazy { get() }
+        )
+    }
+
     single { HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY } }
 
     single {
         OkHttpClient.Builder().apply {
-            // addInterceptor(get<AuthInterceptor>())
             addInterceptor(get<AuthInterceptor>())
+            addInterceptor(get<TokenRefreshInterceptor>())
             addInterceptor(get<HttpLoggingInterceptor>())
             callTimeout(10, TimeUnit.SECONDS)
         }.build()

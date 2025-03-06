@@ -26,5 +26,8 @@ data class LoginDto(
 data class AuthResponse(
     val user: User,
     @SerializedName("access_token")
-    val accessToken: String
+    val accessToken: String,
+    @SerializedName("refresh_token")
+    val refreshToken: String
+
 )

@@ -3,6 +3,10 @@ package com.devid_academy.auth
 import android.util.Log
 import com.devid_academy.local.LocalDatabase
 import com.devid_academy.local.user.UserLocal
+import com.devid_academy.ui.SharedPrefsManager
+import com.devid_academy.ui.SharedPrefsManager.REFRESH_TOKEN
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import retrofit2.HttpException
 
 interface UserRepository {
@@ -14,6 +18,7 @@ interface UserRepository {
 
     fun getAccessToken(): String?
     fun setAccessToken(token: String)
+    suspend fun refreshToken(): ApiResult<AuthResponse>
 }
 
 class UserRepositoryImpl(
@@ -21,6 +26,7 @@ class UserRepositoryImpl(
     private val localdb: LocalDatabase
 ) : UserRepository {
 
+    private val refreshTokenMutex = Mutex()
 
     @Volatile
     private var accessToken: String? = null // Stockage en mémoire
@@ -72,6 +78,7 @@ class UserRepositoryImpl(
 
             if (response is ApiResult.Success) {
                 setAccessToken(response.data.accessToken)
+                SharedPrefsManager[REFRESH_TOKEN] = response.data.refreshToken
             }
             response
         } catch (e: HttpException) {
@@ -86,13 +93,13 @@ class UserRepositoryImpl(
 
         Log.e("login", loginDto.toString())
 
-
         return try {
             val response = handleApi { apiService.loginUser(loginDto) }
             Log.e("login","apiService.signupUser response : $response")
 
             if (response is ApiResult.Success) {
                 setAccessToken(response.data.accessToken)
+                SharedPrefsManager[REFRESH_TOKEN] = response.data.refreshToken
             }
             response
         } catch (e: HttpException) {
@@ -100,6 +107,24 @@ class UserRepositoryImpl(
         } catch (e: Throwable) {
             ApiResult.Error(e)
         }
-
     }
+
+    override suspend fun refreshToken(): ApiResult<AuthResponse> {
+        return refreshTokenMutex.withLock {
+            try {
+                val resfreshToken: String = SharedPrefsManager[REFRESH_TOKEN]
+                val response = handleApi { apiService.refreshToken(resfreshToken) }
+
+                if (response is ApiResult.Success) {
+                    setAccessToken(response.data.accessToken)
+                    SharedPrefsManager[REFRESH_TOKEN] = response.data.refreshToken
+                }
+                response
+            } catch (e: Exception) {
+                ApiResult.Error(e)
+            }
+        }
+    }
+
+
 }

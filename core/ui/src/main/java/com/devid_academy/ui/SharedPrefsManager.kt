@@ -2,18 +2,29 @@ package com.devid_academy.ui
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import java.util.UUID
 
 object SharedPrefsManager {
-
-    private const val APP_PREFERENCES = "app_preferences"
-
+    private const val APP_PREFERENCES = "encrypted_app_preferences"
     const val USER_ID = "USER_ID"
+    const val REFRESH_TOKEN = "REFRESH_TOKEN"
 
     lateinit var preferences: SharedPreferences
 
     fun init(context: Context) {
-        preferences = context.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        preferences = EncryptedSharedPreferences.create(
+            context,
+            APP_PREFERENCES,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 
     private inline fun SharedPreferences.edit(operation: (SharedPreferences.Editor) -> Unit) {
@@ -47,3 +58,4 @@ object SharedPrefsManager {
             else -> throw UnsupportedOperationException("Not yet implemented")
         }
 }
+

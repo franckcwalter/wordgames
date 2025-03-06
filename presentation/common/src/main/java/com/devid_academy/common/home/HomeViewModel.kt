@@ -20,6 +20,7 @@ class HomeViewModel : ViewModel() {
         val userId: UUID? = SharedPrefsManager.get<String>(USER_ID, null)
             .let { runCatching { UUID.fromString(it) }.getOrNull() }
         Log.e("HomeViewModel","userId : $userId" )
+        // on peut utiliser : SharedPrefsManager[USER_ID]
     }
     fun getGameList() {
         // TODO : getGameList with title + image + description
